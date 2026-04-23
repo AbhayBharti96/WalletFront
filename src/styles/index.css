@@ -1,0 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design Tokens ────────────────────────────────────────────────────────── */
+:root {
+  --bg-primary: #f0fdf4;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --brand: #22c55e;
+  --brand-hover: #16a34a;
+  --brand-light: #dcfce7;
+  --accent: #6366f1;
+  --accent-light: #ede9fe;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #22c55e;
+  --gold: #f59e0b;
+  --shadow-sm: 0 10px 24px -16px rgb(15 23 42 / 0.28), 0 2px 6px -2px rgb(15 23 42 / 0.12);
+  --shadow-md: 0 16px 36px -20px rgb(15 23 42 / 0.34), 0 6px 14px -6px rgb(15 23 42 / 0.16);
+  --shadow-lg: 0 24px 52px -26px rgb(15 23 42 / 0.4), 0 10px 24px -10px rgb(15 23 42 / 0.2);
+  --shadow-brand: 0 8px 24px rgba(34,197,94,0.25);
+}
+
+.dark {
+  --bg-primary: #080d1a;
+  --bg-secondary: #0c1424;
+  --bg-card: #111827;
+  --bg-sidebar: #0c1424;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #7c8aa0;
+  --border: #1e2d3d;
+  --border-strong: #2d3f52;
+  --brand: #22c55e;
+  --brand-hover: #4ade80;
+  --brand-light: #052e16;
+  --accent: #818cf8;
+  --accent-light: #1e1b4b;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --success: #4ade80;
+  --shadow-sm: 0 1px 3px rgb(0 0 0/0.4);
+  --shadow-md: 0 4px 12px rgb(0 0 0/0.4);
+  --shadow-lg: 0 10px 30px rgb(0 0 0/0.5);
+  --shadow-brand: 0 8px 32px rgba(34,197,94,0.2);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Utilities ───────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.glass {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.dark .glass {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.btn-primary {
+  @apply px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  background: var(--brand);
+  focus-ring-color: var(--brand);
+}
+.btn-primary:hover:not(:disabled) { background: var(--brand-hover); box-shadow: var(--shadow-brand); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-secondary {
+  @apply px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+}
+.btn-secondary:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+
+.btn-danger {
+  @apply px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-95;
+  background: #fee2e2;
+  color: #dc2626;
+}
+.dark .btn-danger { background: rgba(239,68,68,0.15); color: #f87171; }
+
+.input-field {
+  @apply w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200 focus:ring-2;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border);
+  color: var(--text-primary);
+  caret-color: var(--brand);
+  --tw-ring-color: rgba(34,197,94,0.25);
+}
+.input-field:focus { border-color: var(--brand); }
+.input-field::placeholder { color: var(--text-muted); }
+.input-field:disabled { opacity: 0.5; cursor: not-allowed; }
+.input-field option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+.dark .input-field {
+  background: #0b1220;
+  border-color: var(--border-strong);
+  color-scheme: dark;
+}
+
+/* Hide native browser password reveal controls when we render our own eye toggle */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+input[type="date"].date-input::-webkit-calendar-picker-indicator {
+  display: none;
+  opacity: 0;
+}
+
+input[type="date"].date-input::-webkit-inner-spin-button,
+input[type="date"].date-input::-webkit-clear-button {
+  display: none;
+}
+
+.catalog-date-input {
+  color-scheme: light;
+}
+
+.dark .catalog-date-input {
+  color-scheme: dark;
+}
+
+.catalog-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0;
+}
+
+.dark .catalog-date-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-strong) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ── Scratch Card ────────────────────────────────────────────────────────── */
+.scratch-card-wrapper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.scratch-card-wrapper canvas {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  z-index: 2;
+}
+
+.scratch-reveal-content {
+  position: relative;
+  z-index: 1;
+  border-radius: 20px;
+}
+
+.reward-coin-badge {
+  position: relative;
+  width: 82px;
+  height: 48px;
+  margin: 0 auto 4px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.reward-coin-badge::before {
+  content: '';
+  position: absolute;
+  inset: 6px 4px 0;
+  border-radius: 999px;
+  background: rgba(30, 64, 175, 0.08);
+  filter: blur(8px);
+}
+
+.coin-stack {
+  position: absolute;
+  inset: 0;
+}
+
+.coin {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255,255,255,0.92) 0 9%, transparent 10%),
+    radial-gradient(circle at 50% 52%, #ffe89a 0 36%, #f4b82e 37% 58%, #c9850f 59% 100%);
+  border: 2px solid #b97706;
+  box-shadow:
+    inset 0 0 0 3px rgba(255,255,255,0.32),
+    inset 0 -5px 8px rgba(120, 53, 15, 0.24),
+    0 7px 10px rgba(15, 23, 42, 0.18);
+}
+
+.coin::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  border: 2px solid rgba(146, 64, 14, 0.46);
+}
+
+.coin-back {
+  left: 10px;
+  top: 7px;
+  transform: rotate(-16deg);
+  opacity: 0.78;
+}
+
+.coin-mid {
+  left: 28px;
+  top: 1px;
+  transform: rotate(8deg);
+  opacity: 0.9;
+}
+
+.coin-front {
+  left: 43px;
+  top: 9px;
+  transform: rotate(18deg);
+}
+
+.scratch-confetti-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: confettiFall 1.5s ease-out forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(200px) rotate(720deg); opacity: 0; }
+}
+
+/* ── Page transition ─────────────────────────────────────────────────────── */
+.page-enter { animation: slideUp 0.35s ease-out; }
+
+/* ── Notification badge pulse ────────────────────────────────────────────── */
+@keyframes badgePulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+.badge-pulse { animation: badgePulse 1.8s ease-in-out infinite; }
+
+/* ── Reward shine ────────────────────────────────────────────────────────── */
+.reward-shine {
+  position: relative;
+  overflow: hidden;
+}
+.reward-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+.reward-shine:hover::after { left: 130%; }
+
+/* ── Focus visible for accessibility ─────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ── MUI dark overrides ──────────────────────────────────────────────────── */
+.dark .MuiPaper-root { background-color: var(--bg-card) !important; color: var(--text-primary) !important; }
+.dark .MuiTableCell-root { color: var(--text-secondary) !important; border-color: var(--border) !important; }
