@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { store } from './store/store'
 import { registerAuthTokenSync } from './core/authSync'
+import { registerServiceWorker } from './core/pwa'
 import { setTokens } from './store/authSlice'
 import { ErrorBoundary } from './shared/components/ErrorBoundary'
 import App from './App'
@@ -13,6 +14,8 @@ import './styles/index.css'
 registerAuthTokenSync((tokens) => {
   store.dispatch(setTokens(tokens))
 })
+
+registerServiceWorker()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
