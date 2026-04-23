@@ -15,6 +15,9 @@ if (!BASE && import.meta.env.PROD) {
 }
 
 const apiBaseUrl = BASE || 'http://localhost:8080'
+const ngrokHeaders = apiBaseUrl.includes('ngrok')
+  ? { 'ngrok-skip-browser-warning': 'true' }
+  : undefined
 
 /** Clears persisted auth in both storages (session + remember-me). */
 export function clearClientAuth(): void {
@@ -26,8 +29,8 @@ export function clearClientAuth(): void {
 }
 
 // ── Axios instances ──────────────────────────────────────────────────────────
-export const api: AxiosInstance = axios.create({ baseURL: apiBaseUrl, timeout: 15000 })
-export const authApi: AxiosInstance = axios.create({ baseURL: apiBaseUrl, timeout: 15000 })
+export const api: AxiosInstance = axios.create({ baseURL: apiBaseUrl, timeout: 15000, headers: ngrokHeaders })
+export const authApi: AxiosInstance = axios.create({ baseURL: apiBaseUrl, timeout: 15000, headers: ngrokHeaders })
 
 // ── Auth token helpers ────────────────────────────────────────────────────────
 const getToken = () => sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken')
