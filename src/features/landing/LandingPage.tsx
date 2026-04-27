@@ -78,22 +78,22 @@ export default function LandingPage() {
           style={{ background: isDark ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.09)' }}
         />
 
-        <div className="relative mx-auto max-w-7xl px-6 py-8 lg:px-10">
+        <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
           <header
-            className="flex items-center justify-between rounded-full border px-5 py-3 backdrop-blur-xl"
+            className="flex flex-col gap-4 rounded-[28px] border px-4 py-4 backdrop-blur-xl sm:px-5 sm:py-3 lg:flex-row lg:items-center lg:justify-between lg:rounded-full"
             style={{
               borderColor: isDark ? 'rgba(255,255,255,0.18)' : 'rgba(15,23,42,0.22)',
               background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.55)',
               boxShadow: isDark ? 'inset 0 1px 0 rgba(255,255,255,0.08)' : 'inset 0 1px 0 rgba(255,255,255,0.85)',
             }}
           >
-            <button type="button" onClick={() => navigate('/')} className="flex items-center gap-3 text-left">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl text-white shadow-lg" style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)' }}>
+            <button type="button" onClick={() => navigate('/')} className="flex min-w-0 items-center gap-3 text-left">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-white shadow-lg sm:h-11 sm:w-11" style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)' }}>
                 <Icon8 name="wallet" size={20} />
               </div>
-              <div>
-                <p className="text-lg font-semibold tracking-wide" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>PayVault</p>
-                <p className="text-xs" style={{ color: isDark ? '#cbd5e1' : '#0f172a' }}>Digital wallet with KYC and rewards</p>
+              <div className="min-w-0">
+                <p className="truncate text-base font-semibold tracking-wide sm:text-lg" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>PayVault</p>
+                <p className="text-xs leading-5 sm:truncate" style={{ color: isDark ? '#cbd5e1' : '#0f172a' }}>Digital wallet with KYC and rewards</p>
               </div>
             </button>
 
@@ -103,10 +103,10 @@ export default function LandingPage() {
               <a href="#dashboard" className="transition hover:text-white">Dashboard</a>
             </nav>
 
-            <div className="flex items-center gap-2">
+            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3 lg:w-auto lg:flex lg:items-center">
               <button
                 onClick={toggle}
-                className="rounded-full border px-3 py-2 transition hover:bg-white/10 inline-flex items-center gap-1.5 text-xs font-medium"
+                className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border px-3 py-2 text-xs font-medium transition hover:bg-white/10"
                 style={{
                   color: isDark ? '#e2e8f0' : '#0f172a',
                   borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(15,23,42,0.25)',
@@ -119,7 +119,7 @@ export default function LandingPage() {
               </button>
               <button
                 onClick={() => navigate(accessToken ? '/dashboard' : '/login')}
-                className="rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-white/10"
+                className="w-full rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-white/10"
                 style={{
                   color: isDark ? '#e2e8f0' : '#0f172a',
                   borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(15,23,42,0.25)',
@@ -130,7 +130,7 @@ export default function LandingPage() {
               </button>
               <button
                 onClick={() => navigate(accessToken ? '/dashboard' : '/signup')}
-                className="rounded-full px-4 py-2 text-sm font-semibold text-white transition hover:scale-[1.02]"
+                className="w-full rounded-full px-4 py-2 text-sm font-semibold text-white transition hover:scale-[1.02]"
                 style={{ background: 'var(--brand)' }}
               >
                 {accessToken ? 'Open Wallet' : 'Get Started'}
@@ -138,13 +138,13 @@ export default function LandingPage() {
             </div>
           </header>
 
-          <div className="grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+          <div className="grid items-center gap-10 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-24">
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.05 }}
-                className="max-w-3xl text-5xl font-bold leading-tight md:text-6xl"
+                className="max-w-3xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl"
                 style={{ color: isDark ? '#ffffff' : '#0f172a' }}
               >
                 Secure money movement,
@@ -158,7 +158,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.12 }}
-                className="mt-6 max-w-2xl text-lg leading-8"
+                className="mt-6 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8"
                 style={{ color: isDark ? '#cbd5e1' : '#0f172a' }}
               >
                 Your wallet is ready: add money, transfer instantly, track every transaction in real time, and manage balance with secure KYC-powered controls.
@@ -168,11 +168,11 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.18 }}
-                className="mt-10 flex flex-wrap gap-4"
+                className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-4"
               >
                 <button
                   onClick={() => navigate(accessToken ? '/dashboard' : '/signup')}
-                  className="group inline-flex items-center gap-2 rounded-2xl px-6 py-3.5 font-semibold text-white shadow-xl transition hover:-translate-y-0.5"
+                  className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-3.5 font-semibold text-white shadow-xl transition hover:-translate-y-0.5 sm:w-auto"
                   style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)' }}
                 >
                   Launch PayVault
@@ -180,7 +180,7 @@ export default function LandingPage() {
                 </button>
                 <button
                   onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="inline-flex items-center gap-2 rounded-2xl border px-6 py-3.5 font-medium transition hover:bg-white/10"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-6 py-3.5 font-medium transition hover:bg-white/10 sm:w-auto"
                   style={{
                     color: isDark ? '#ffffff' : '#0f172a',
                     borderColor: isDark ? 'rgba(255,255,255,0.18)' : 'rgba(15,23,42,0.25)',
@@ -192,7 +192,7 @@ export default function LandingPage() {
                 </button>
               </motion.div>
 
-              <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-8 grid gap-4 sm:mt-10 sm:grid-cols-2 xl:grid-cols-4">
                 {stats.map((item, idx) => (
                   <motion.div
                     key={item.label}
@@ -217,21 +217,21 @@ export default function LandingPage() {
                 initial={{ opacity: 0, scale: 0.96, y: 24 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.7 }}
-                className="relative mx-auto max-w-xl rounded-[32px] border p-5 shadow-2xl backdrop-blur-2xl"
+                className="relative mx-auto w-full max-w-xl rounded-[28px] border p-3 shadow-2xl backdrop-blur-2xl sm:rounded-[32px] sm:p-5"
                 style={{ borderColor: 'rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.08)' }}
               >
-                <div className="rounded-[28px] border p-5" style={{ borderColor: 'rgba(255,255,255,0.12)', background: 'linear-gradient(135deg,#052e16 0%,#0d3320 55%,#0a0f1e 100%)' }}>
-                  <div className="flex items-center justify-between">
-                    <div>
+                <div className="rounded-[24px] border p-4 sm:rounded-[28px] sm:p-5" style={{ borderColor: 'rgba(255,255,255,0.12)', background: 'linear-gradient(135deg,#052e16 0%,#0d3320 55%,#0a0f1e 100%)' }}>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
                       <p className="text-sm text-slate-300">Available Balance</p>
-                      <h3 className="mt-1 text-4xl font-bold text-white">{balanceText}</h3>
+                      <h3 className="mt-1 break-words text-3xl font-bold text-white sm:text-4xl">{balanceText}</h3>
                     </div>
-                    <div className="rounded-2xl px-3 py-2 text-sm" style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}>
+                    <div className="w-fit rounded-2xl px-3 py-2 text-sm" style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}>
                       API connected
                     </div>
                   </div>
 
-                  <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="rounded-3xl border p-4" style={{ borderColor: 'rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)' }}>
                       <div className="flex items-center gap-3">
                         <div className="rounded-2xl p-2" style={{ background: 'rgba(34,197,94,0.2)', color: '#86efac' }}><Icon8 name="wallet" size={20} /></div>
@@ -253,16 +253,16 @@ export default function LandingPage() {
                   </div>
 
                   <div className="mt-6 rounded-3xl border p-5" style={{ borderColor: 'rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)' }}>
-                    <div className="mb-4 flex items-center justify-between">
+                    <div className="mb-4 flex items-center justify-between gap-3">
                       <p className="font-semibold text-white">Activity Overview</p>
                       <Icon8 name="transactions" size={20} className="text-slate-400" />
                     </div>
-                    <div className="flex h-40 items-end gap-3">
+                    <div className="flex h-32 items-end gap-2 sm:h-40 sm:gap-3">
                       {[40, 72, 58, 90, 66, 108, 84].map((h, i) => (
                         <div key={i} className="flex-1 rounded-t-2xl" style={{ background: 'linear-gradient(to top,#22c55e,#818cf8)', height: `${h}%` }} />
                       ))}
                     </div>
-                    <div className="mt-4 flex justify-between text-xs text-slate-400">
+                    <div className="mt-4 grid grid-cols-7 gap-1 text-center text-[11px] text-slate-400 sm:flex sm:justify-between sm:text-xs">
                       <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                     </div>
                   </div>
@@ -286,10 +286,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="features" className="mx-auto max-w-7xl px-6 py-6 lg:px-10 lg:py-10">
+      <section id="features" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
         <div className="mb-8 max-w-2xl">
           <p className="text-sm uppercase tracking-[0.25em]" style={{ color: 'var(--brand)' }}>Feature Highlights</p>
-          <h2 className="mt-3 text-3xl font-bold md:text-4xl" style={{ color: 'var(--text-primary)' }}>Interactive wallet-first sections built for PayVault users</h2>
+          <h2 className="mt-3 text-2xl font-bold sm:text-3xl md:text-4xl" style={{ color: 'var(--text-primary)' }}>Interactive wallet-first sections built for PayVault users</h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -315,11 +315,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="security" className="mx-auto max-w-7xl px-6 py-10 lg:px-10 lg:py-16">
+      <section id="security" className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-10 lg:py-16">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[32px] border p-8" style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}>
+          <div className="rounded-[32px] border p-6 sm:p-8" style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}>
             <p className="text-sm uppercase tracking-[0.25em]" style={{ color: 'var(--accent)' }}>Live Wallet Flows</p>
-            <h2 className="mt-3 text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Try every wallet action from one smooth experience</h2>
+            <h2 className="mt-3 text-2xl font-bold sm:text-3xl" style={{ color: 'var(--text-primary)' }}>Try every wallet action from one smooth experience</h2>
             <p className="mt-4 leading-7" style={{ color: 'var(--text-secondary)' }}>
               Jump in and move through login, KYC, top-ups, transfers, transaction tracking, and rewards with interactive cards and clear next steps.
             </p>

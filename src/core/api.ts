@@ -115,9 +115,9 @@ export const authService = {
 // ── User API ──────────────────────────────────────────────────────────────────
 export const userService = {
   getProfile: (userId: number) =>
-    api.get<ApiResponse<UserProfile>>('/api/users/profile', { headers: { 'X-UserId': userId } }),
+    api.get<ApiResponse<UserProfile>>('/api/users/profile', { headers: { 'X-User-Id': userId } }),
   updateProfile: (userId: number, d: { name?: string; phone?: string }) =>
-    api.put<ApiResponse<UserProfile>>('/api/users/profile', d, { headers: { 'X-UserId': userId } }),
+    api.put<ApiResponse<UserProfile>>('/api/users/profile', d, { headers: { 'X-User-Id': userId } }),
   searchReceivers: (q: string) =>
     api.get<ApiResponse<ReceiverSuggestion[]>>(`/api/users/receivers/search?q=${encodeURIComponent(q)}`),
 }
@@ -130,11 +130,11 @@ export const kycService = {
     return api.post<ApiResponse<KycStatusResponse>>(
       `/api/kyc/submit?docType=${docType}&docNumber=${encodeURIComponent(docNumber)}`,
       fd,
-      { headers: { 'X-UserId': userId, 'Content-Type': 'multipart/form-data' } }
+      { headers: { 'X-User-Id': userId, 'Content-Type': 'multipart/form-data' } }
     )
   },
   status: (userId: number) =>
-    api.get<ApiResponse<KycStatusResponse>>('/api/kyc/status', { headers: { 'X-UserId': userId } }),
+    api.get<ApiResponse<KycStatusResponse>>('/api/kyc/status', { headers: { 'X-User-Id': userId } }),
 }
 
 // ── Wallet API ────────────────────────────────────────────────────────────────
@@ -179,15 +179,15 @@ export const walletService = {
 // ── Rewards API ───────────────────────────────────────────────────────────────
 export const rewardsService = {
   summary: (userId: number) =>
-    api.get<ApiResponse<RewardSummary>>('/api/rewards/summary', { headers: { 'X-UserId': userId } }),
+    api.get<ApiResponse<RewardSummary>>('/api/rewards/summary', { headers: { 'X-User-Id': userId } }),
   catalog: () => api.get<ApiResponse<RewardItem[]>>('/api/rewards/catalog'),
   transactions: (userId: number) =>
-    api.get<ApiResponse<RewardTransaction[]>>('/api/rewards/transactions', { headers: { 'X-UserId': userId } }),
+    api.get<ApiResponse<RewardTransaction[]>>('/api/rewards/transactions', { headers: { 'X-User-Id': userId } }),
   redeem: (userId: number, rewardId: number) =>
-    api.post<ApiResponse<Redemption>>('/api/rewards/redeem', { rewardId }, { headers: { 'X-UserId': userId } }),
+    api.post<ApiResponse<Redemption>>('/api/rewards/redeem', { rewardId }, { headers: { 'X-User-Id': userId } }),
   redeemPoints: (userId: number, points: number) =>
     api.post<ApiResponse<void>>(`/api/rewards/redeem-points?points=${points}`, {}, {
-      headers: { 'X-UserId': userId },
+      headers: { 'X-User-Id': userId },
     }),
   earnInternal: (userId: number, amount: number) =>
     api.post(`/api/rewards/internal/earn?userId=${userId}&amount=${amount}`),
@@ -196,43 +196,43 @@ export const rewardsService = {
 // ── Admin API ─────────────────────────────────────────────────────────────────
 export const adminService = {
   dashboard: (role: string) =>
-    api.get<ApiResponse<AdminDashboard>>('/api/admin/dashboard', { headers: { 'X-UserRole': role } }),
+    api.get<ApiResponse<AdminDashboard>>('/api/admin/dashboard', { headers: { 'X-User-Role': role } }),
   listUsers: (role: string, params?: Record<string, unknown>) =>
     api.get<ApiResponse<PageResponse<AdminUserResponse>>>('/api/admin/users', {
-      headers: { 'X-UserRole': role }, params,
+      headers: { 'X-User-Role': role }, params,
     }),
   getUser: (userId: number, role: string) =>
-    api.get<ApiResponse<AdminUserResponse>>(`/api/admin/users/${userId}`, { headers: { 'X-UserRole': role } }),
+    api.get<ApiResponse<AdminUserResponse>>(`/api/admin/users/${userId}`, { headers: { 'X-User-Role': role } }),
   blockUser: (userId: number, role: string) =>
-    api.patch<ApiResponse<AdminUserResponse>>(`/api/admin/users/${userId}/block`, {}, { headers: { 'X-UserRole': role } }),
+    api.patch<ApiResponse<AdminUserResponse>>(`/api/admin/users/${userId}/block`, {}, { headers: { 'X-User-Role': role } }),
   unblockUser: (userId: number, role: string) =>
-    api.patch<ApiResponse<AdminUserResponse>>(`/api/admin/users/${userId}/unblock`, {}, { headers: { 'X-UserRole': role } }),
+    api.patch<ApiResponse<AdminUserResponse>>(`/api/admin/users/${userId}/unblock`, {}, { headers: { 'X-User-Role': role } }),
   changeRole: (userId: number, newRole: string, role: string) =>
-    api.patch(`/api/admin/users/${userId}/role?newRole=${newRole}`, {}, { headers: { 'X-UserRole': role } }),
+    api.patch(`/api/admin/users/${userId}/role?newRole=${newRole}`, {}, { headers: { 'X-User-Role': role } }),
   searchUsers: (q: string, role: string, page = 0) =>
     api.get<ApiResponse<PageResponse<AdminUserResponse>>>(`/api/admin/users/search?q=${encodeURIComponent(q)}&page=${page}`, {
-      headers: { 'X-UserRole': role },
+      headers: { 'X-User-Role': role },
     }),
   pendingKyc: (role: string, page = 0) =>
     api.get<ApiResponse<PageResponse<KycStatusResponse>>>(`/api/admin/kyc/pending?page=${page}`, {
-      headers: { 'X-UserRole': role },
+      headers: { 'X-User-Role': role },
     }),
   approveKyc: (kycId: number, role: string, email: string) =>
-    api.post(`/api/admin/kyc/${kycId}/approve`, {}, { headers: { 'X-UserRole': role, 'X-UserEmail': email } }),
+    api.post(`/api/admin/kyc/${kycId}/approve`, {}, { headers: { 'X-User-Role': role, 'X-User-Email': email } }),
   rejectKyc: (kycId: number, reason: string, role: string, email: string) =>
     api.post(`/api/admin/kyc/${kycId}/reject?reason=${encodeURIComponent(reason)}`, {}, {
-      headers: { 'X-UserRole': role, 'X-UserEmail': email },
+      headers: { 'X-User-Role': role, 'X-User-Email': email },
     }),
   catalog: (role: string) =>
-    api.get<ApiResponse<RewardItem[]>>('/api/rewards/admin/catalog', { headers: { 'X-UserRole': role } }),
+    api.get<ApiResponse<RewardItem[]>>('/api/rewards/admin/catalog', { headers: { 'X-User-Role': role } }),
   addCatalogItem: (payload: RewardItemPayload, role: string) =>
-    api.post<ApiResponse<RewardItem>>('/api/rewards/catalog/add', payload, { headers: { 'X-UserRole': role } }),
+    api.post<ApiResponse<RewardItem>>('/api/rewards/catalog/add', payload, { headers: { 'X-User-Role': role } }),
   updateCatalogItem: (rewardId: number, payload: RewardItemPayload, role: string) =>
     api.put<ApiResponse<RewardItem>>(`/api/rewards/admin/catalog/${rewardId}`, payload, {
-      headers: { 'X-UserRole': role },
+      headers: { 'X-User-Role': role },
     }),
   deleteCatalogItem: (rewardId: number, role: string) =>
-    api.delete<ApiResponse<void>>(`/api/rewards/admin/catalog/${rewardId}`, { headers: { 'X-UserRole': role } }),
+    api.delete<ApiResponse<void>>(`/api/rewards/admin/catalog/${rewardId}`, { headers: { 'X-User-Role': role } }),
 }
 
 export default api

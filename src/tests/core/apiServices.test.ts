@@ -122,9 +122,9 @@ describe('core/api service methods', () => {
       userService.updateProfile(7, { name: 'New Name', phone: '8888888888' })
       userService.searchReceivers('a+b user')
 
-      expect(apiInstance.get).toHaveBeenCalledWith('/api/users/profile', { headers: { 'X-UserId': 7 } })
+      expect(apiInstance.get).toHaveBeenCalledWith('/api/users/profile', { headers: { 'X-User-Id': 7 } })
       expect(apiInstance.put).toHaveBeenCalledWith('/api/users/profile', { name: 'New Name', phone: '8888888888' }, {
-        headers: { 'X-UserId': 7 },
+        headers: { 'X-User-Id': 7 },
       })
       expect(apiInstance.get).toHaveBeenCalledWith('/api/users/receivers/search?q=a%2Bb%20user')
     })
@@ -140,9 +140,9 @@ describe('core/api service methods', () => {
       expect(apiInstance.post).toHaveBeenCalledWith(
         '/api/kyc/submit?docType=AADHAAR&docNumber=AA%2011%2F22',
         expect.any(FormData),
-        { headers: { 'X-UserId': 3, 'Content-Type': 'multipart/form-data' } }
+        { headers: { 'X-User-Id': 3, 'Content-Type': 'multipart/form-data' } }
       )
-      expect(apiInstance.get).toHaveBeenCalledWith('/api/kyc/status', { headers: { 'X-UserId': 3 } })
+      expect(apiInstance.get).toHaveBeenCalledWith('/api/kyc/status', { headers: { 'X-User-Id': 3 } })
     })
   })
 
@@ -206,14 +206,14 @@ describe('core/api service methods', () => {
       rewardsService.redeemPoints(5, 300)
       rewardsService.earnInternal(5, 1200)
 
-      expect(apiInstance.get).toHaveBeenCalledWith('/api/rewards/summary', { headers: { 'X-UserId': 5 } })
+      expect(apiInstance.get).toHaveBeenCalledWith('/api/rewards/summary', { headers: { 'X-User-Id': 5 } })
       expect(apiInstance.get).toHaveBeenCalledWith('/api/rewards/catalog')
-      expect(apiInstance.get).toHaveBeenCalledWith('/api/rewards/transactions', { headers: { 'X-UserId': 5 } })
+      expect(apiInstance.get).toHaveBeenCalledWith('/api/rewards/transactions', { headers: { 'X-User-Id': 5 } })
       expect(apiInstance.post).toHaveBeenCalledWith('/api/rewards/redeem', { rewardId: 12 }, {
-        headers: { 'X-UserId': 5 },
+        headers: { 'X-User-Id': 5 },
       })
       expect(apiInstance.post).toHaveBeenCalledWith('/api/rewards/redeem-points?points=300', {}, {
-        headers: { 'X-UserId': 5 },
+        headers: { 'X-User-Id': 5 },
       })
       expect(apiInstance.post).toHaveBeenCalledWith('/api/rewards/internal/earn?userId=5&amount=1200')
     })
@@ -238,44 +238,44 @@ describe('core/api service methods', () => {
       adminService.updateCatalogItem(12, item, 'ADMIN')
       adminService.deleteCatalogItem(12, 'ADMIN')
 
-      expect(apiInstance.get).toHaveBeenCalledWith('/api/admin/dashboard', { headers: { 'X-UserRole': 'ADMIN' } })
+      expect(apiInstance.get).toHaveBeenCalledWith('/api/admin/dashboard', { headers: { 'X-User-Role': 'ADMIN' } })
       expect(apiInstance.get).toHaveBeenCalledWith('/api/admin/users', {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
         params: { page: 1 },
       })
-      expect(apiInstance.get).toHaveBeenCalledWith('/api/admin/users/4', { headers: { 'X-UserRole': 'ADMIN' } })
+      expect(apiInstance.get).toHaveBeenCalledWith('/api/admin/users/4', { headers: { 'X-User-Role': 'ADMIN' } })
       expect(apiInstance.patch).toHaveBeenCalledWith('/api/admin/users/4/block', {}, {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.patch).toHaveBeenCalledWith('/api/admin/users/4/unblock', {}, {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.patch).toHaveBeenCalledWith('/api/admin/users/4/role?newRole=USER', {}, {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.get).toHaveBeenCalledWith('/api/admin/users/search?q=a%2Bb%20user&page=2', {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.get).toHaveBeenCalledWith('/api/admin/kyc/pending?page=3', {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.post).toHaveBeenCalledWith('/api/admin/kyc/9/approve', {}, {
-        headers: { 'X-UserRole': 'ADMIN', 'X-UserEmail': 'admin@test.com' },
+        headers: { 'X-User-Role': 'ADMIN', 'X-User-Email': 'admin@test.com' },
       })
       expect(apiInstance.post).toHaveBeenCalledWith('/api/admin/kyc/9/reject?reason=bad%20photo%2Fid', {}, {
-        headers: { 'X-UserRole': 'ADMIN', 'X-UserEmail': 'admin@test.com' },
+        headers: { 'X-User-Role': 'ADMIN', 'X-User-Email': 'admin@test.com' },
       })
       expect(apiInstance.get).toHaveBeenCalledWith('/api/rewards/admin/catalog', {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.post).toHaveBeenCalledWith('/api/rewards/catalog/add', item, {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.put).toHaveBeenCalledWith('/api/rewards/admin/catalog/12', item, {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
       expect(apiInstance.delete).toHaveBeenCalledWith('/api/rewards/admin/catalog/12', {
-        headers: { 'X-UserRole': 'ADMIN' },
+        headers: { 'X-User-Role': 'ADMIN' },
       })
     })
   })
