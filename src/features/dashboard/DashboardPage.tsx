@@ -93,29 +93,29 @@ export default function DashboardPage() {
   })()
 
   return (
-    <div className="p-3 lg:p-5 space-y-4 max-w-[1080px] mx-auto">
+    <div className="mx-auto max-w-[1080px] space-y-4 p-3 sm:p-4 lg:p-5">
       <motion.section
         className="rounded-[24px] p-4 lg:p-5"
         style={{ background: 'linear-gradient(120deg, #cde8dd 0%, #c7e0e4 100%)', border: '1px solid #b7d2ce' }}
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="grid lg:grid-cols-[1.15fr_1fr] gap-4 items-center">
+        <div className="grid items-center gap-4 lg:grid-cols-[1.15fr_1fr]">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-3" style={{ background: '#ecf5ef' }}>
               <span aria-hidden="true"><Icon8 name="success" size={14} /></span>
               <span className="text-xs font-black tracking-[0.2em]" style={{ color: '#22b96f' }}>ACCOUNT OVERVIEW</span>
             </div>
-            <h1 className="text-2xl lg:text-4xl leading-[1.1] font-extrabold max-w-xl" style={{ color: '#0c1a3a' }}>
+            <h1 className="max-w-xl text-2xl font-extrabold leading-[1.1] sm:text-3xl lg:text-4xl" style={{ color: '#0c1a3a' }}>
               Manage your wallet, KYC status, and reward growth from one place.
             </h1>
               <p className="mt-3 text-xs lg:text-sm leading-relaxed max-w-xl" style={{ color: '#4f6275' }}>
                 View live wallet balance, KYC status, reward points, and next-tier progress in one place with fast actions for top-up, transfer, and redemption.
               </p>
-            <div className="mt-4 flex flex-wrap gap-2.5">
+            <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
               <button
                 onClick={() => navigate('/wallet')}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-black transition-all hover:brightness-95"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-black transition-all hover:brightness-95 sm:w-auto"
                 style={{ background: '#23c363', color: 'white', boxShadow: '0 12px 24px rgba(35,195,99,0.3)' }}
               >
                 Go to wallet
@@ -123,7 +123,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => navigate('/rewards')}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-85"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-all hover:opacity-85 sm:w-auto"
                 style={{ background: '#f5f7f8', color: '#172338', border: '1px solid #d9e2e8' }}
               >
                 <Icon8 name="rewards" size={18} />
@@ -147,7 +147,7 @@ export default function DashboardPage() {
                   <Icon8 name={showBalance ? 'eyeOff' : 'eye'} size={18} />
                 </button>
               </div>
-              <div className="text-4xl leading-none font-black mt-2" style={{ color: '#0e1f3f' }}>{wLoad ? '...' : balanceText}</div>
+              <div className="mt-2 break-words text-3xl font-black leading-none sm:text-4xl" style={{ color: '#0e1f3f' }}>{wLoad ? '...' : balanceText}</div>
               <div
                 className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
                 style={{ background: '#ddf3e5', color: '#2aa260' }}
@@ -158,7 +158,7 @@ export default function DashboardPage() {
             </div>
             <div className="rounded-3xl p-4" style={{ background: '#f4f6f8', border: '1px solid #d5dee6', boxShadow: isDark ? 'none' : lightCardShadow }}>
               <div className="text-sm font-medium" style={{ color: '#9ea8ba' }}>Reward Points</div>
-              <div className="text-4xl leading-none font-black mt-2" style={{ color: '#0e1f3f' }}>{rLoad ? '...' : points.toLocaleString()}</div>
+              <div className="mt-2 break-words text-3xl font-black leading-none sm:text-4xl" style={{ color: '#0e1f3f' }}>{rLoad ? '...' : points.toLocaleString()}</div>
               <div
                 className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
                 style={{ background: tierS.bg, color: tierS.text, border: `1px solid ${tierS.border}` }}
@@ -173,7 +173,7 @@ export default function DashboardPage() {
 
       {showKycBanner && (
         <motion.div
-          className="rounded-2xl px-4 py-3 flex items-center gap-3"
+          className="flex flex-col gap-3 rounded-2xl px-4 py-3 sm:flex-row sm:items-center"
           style={{ background: kycI.bg, border: `1px solid ${kycI.color}40` }}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}

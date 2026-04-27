@@ -25,14 +25,14 @@ const canSeeCatalogItem = (item: RewardItem, currentTier?: RewardTier) => {
 // ── Redeem success animation overlay ────────────────────────────────────────
 const RedeemSuccessModal: React.FC<{ coupon?: string; itemName: string; onClose: () => void }> = ({ coupon, itemName, onClose }) => (
   <AnimatePresence>
-    <motion.div className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+    <motion.div className="fixed inset-0 z-[60] flex items-end justify-center p-3 sm:items-center sm:p-4"
       style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       role="dialog" aria-modal="true" aria-label="Redemption successful">
-      <motion.div className="card w-full max-w-sm text-center overflow-hidden"
+      <motion.div className="card w-full max-w-sm text-center overflow-hidden rounded-[24px]"
         initial={{ scale: 0.5, rotate: -8 }} animate={{ scale: 1, rotate: 0 }}
         exit={{ scale: 0.5 }} transition={{ type: 'spring', damping: 14, stiffness: 180 }}>
-        <div className="p-6 space-y-4">
+        <div className="space-y-4 p-5 sm:p-6">
           <motion.div className="inline-flex" initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }}
             transition={{ delay: 0.15, duration: 0.5, times: [0, 0.7, 1] }}><Icon8 name="success" size={58} /></motion.div>
           <div>
@@ -202,7 +202,7 @@ export default function RewardsPage() {
   const effectiveTierBorder = isDark && isSilver ? '#3f567a' : tierStyle.border
 
   return (
-    <div className="p-4 lg:p-6 space-y-6 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-5xl space-y-6 p-3 sm:p-4 lg:p-6">
       {successData && (
         <RedeemSuccessModal coupon={successData.coupon} itemName={successData.itemName} onClose={() => setSuccessData(null)} />
       )}
@@ -214,12 +214,12 @@ export default function RewardsPage() {
             <motion.div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setConfirmItem(null)} />
-            <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            <motion.div className="fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center sm:p-4"
               role="dialog" aria-modal="true" aria-label={`Confirm redeem ${confirmItem.name}`}>
-              <motion.div className="card w-full max-w-sm text-center overflow-hidden"
+              <motion.div className="card w-full max-w-sm text-center overflow-hidden rounded-[24px]"
                 initial={{ scale: 0.7, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.7, y: 30 }}
                 transition={{ type: 'spring', damping: 18 }}>
-                <div className="p-6 space-y-4">
+                <div className="space-y-4 p-5 sm:p-6">
                   <motion.div className="inline-flex" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', delay: 0.1 }}>
                     <Icon8 name={({ CASHBACK: 'wallet', COUPON: 'transactions', VOUCHER: 'rewards' }[confirmItem.type] || 'rewards') as React.ComponentProps<typeof Icon8>['name']} size={42} />
                   </motion.div>
@@ -235,7 +235,7 @@ export default function RewardsPage() {
                       {formatCurrency(confirmItem.cashbackAmount)} will be credited instantly
                     </div>
                   )}
-                  <div className="flex gap-3">
+                  <div className="flex flex-col-reverse gap-3 sm:flex-row">
                     <button onClick={() => setConfirmItem(null)} className="flex-1 btn-secondary py-2.5 text-sm">Cancel</button>
                     <motion.button onClick={handleRedeemItem} disabled={actionLoading}
                       className="flex-1 btn-primary py-2.5 text-sm" whileTap={{ scale: 0.96 }}
@@ -289,12 +289,12 @@ export default function RewardsPage() {
 
         <motion.div className="card p-5" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <div className="text-xs font-bold mb-2 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Convert to Cash</div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <input type="number" placeholder="Points" min={1} max={pts} value={redeemPts}
               onChange={e => setRedeemPts(e.target.value)} className="input-field py-2 text-sm flex-1"
               aria-label="Points to convert to cash" />
             <motion.button onClick={handleRedeemPoints} disabled={ptsLoading || !redeemPts}
-              className="btn-primary px-3 py-2 text-xs flex-shrink-0" whileTap={{ scale: 0.95 }}>
+              className="btn-primary px-3 py-2 text-xs flex-shrink-0 sm:w-auto" whileTap={{ scale: 0.95 }}>
               {ptsLoading ? '…' : '→ ₹'}
             </motion.button>
           </div>
@@ -303,7 +303,7 @@ export default function RewardsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+      <div className="grid w-full grid-cols-2 gap-1 rounded-xl p-1 sm:w-fit sm:flex" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
         role="tablist" aria-label="Rewards sections">
         {(['catalog', 'history'] as const).map(t => (
           <button key={t} role="tab" aria-selected={tab === t}
@@ -339,7 +339,7 @@ export default function RewardsPage() {
             ? <div className="text-center py-12"><div className="inline-flex mb-3"><Icon8 name="transactions" size={40} /></div><p style={{ color: 'var(--text-muted)' }}>No reward transactions yet</p></div>
             : <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
                 {transactions.map((tx, i) => (
-                  <motion.div key={tx.id} className="flex items-center gap-4 px-5 py-4"
+                  <motion.div key={tx.id} className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}>
                     <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
                       style={{

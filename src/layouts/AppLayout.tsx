@@ -231,10 +231,10 @@ export default function AppLayout() {
           <div className="flex items-center gap-2">
             {/* Theme toggle */}
             <button onClick={toggle} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="px-3 py-2 rounded-xl transition-all hover:scale-105 inline-flex items-center gap-1.5 text-xs font-medium"
+              className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-medium transition-all hover:scale-105 sm:px-3"
               style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
               <Icon8 name={isDark ? 'sun' : 'moon'} size={18} />
-              <span>{isDark ? 'Dark' : 'Light'}</span>
+              <span className="hidden sm:inline">{isDark ? 'Dark' : 'Light'}</span>
             </button>
 
             {/* Notification bell */}
@@ -258,7 +258,7 @@ export default function AppLayout() {
               <AnimatePresence>
                 {notifOpen && (
                   <motion.div
-                    className="absolute right-0 top-11 w-80 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                    className="absolute right-0 top-11 z-50 w-[min(20rem,calc(100vw-1rem))] overflow-hidden rounded-2xl shadow-2xl"
                     style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
                     initial={{ opacity: 0, y: -8, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -266,7 +266,7 @@ export default function AppLayout() {
                     transition={{ duration: 0.15 }}
                     role="menu" aria-label="Notifications"
                   >
-                    <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
+                    <div className="flex flex-col gap-2 px-4 py-3 border-b sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: 'var(--border)' }}>
                       <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Notifications</span>
                       <div className="flex items-center gap-3">
                         {unreadCount > 0 && (
@@ -334,7 +334,7 @@ export default function AppLayout() {
 
               <AnimatePresence>
                 {menuOpen && (
-                  <motion.div className="absolute right-0 top-11 w-48 rounded-2xl shadow-2xl z-50 overflow-hidden py-1"
+                  <motion.div className="absolute right-0 top-11 z-50 w-48 overflow-hidden rounded-2xl py-1 shadow-2xl"
                     style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
                     initial={{ opacity: 0, y: -8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -8, scale: 0.95 }} role="menu">

@@ -26,18 +26,18 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, si
             aria-hidden="true"
           />
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center sm:p-4"
             role="dialog" aria-modal="true" aria-label={title}
           >
             <motion.div
-              className={`card w-full ${widths[size]} overflow-hidden`}
+              className={`card w-full ${widths[size]} max-h-[85vh] overflow-hidden rounded-[24px] sm:rounded-[28px]`}
               initial={{ scale: 0.85, y: 40, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.85, y: 40, opacity: 0 }}
               transition={{ type: 'spring', damping: 22, stiffness: 220 }}
             >
-              <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
-                <h2 className="font-display font-semibold text-base" style={{ color: 'var(--text-primary)' }}>{title}</h2>
+              <div className="flex items-center justify-between gap-3 px-4 py-4 border-b sm:px-5" style={{ borderColor: 'var(--border)' }}>
+                <h2 className="font-display font-semibold text-base sm:text-lg" style={{ color: 'var(--text-primary)' }}>{title}</h2>
                 <button
                   onClick={onClose}
                   className="w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-opacity hover:opacity-60 focus-visible:outline-none focus-visible:ring-2"
@@ -45,7 +45,7 @@ export const Modal: React.FC<ModalProps> = ({ open, onClose, title, children, si
                   aria-label="Close modal"
                 >✕</button>
               </div>
-              <div className="p-5">{children}</div>
+              <div className="max-h-[calc(85vh-72px)] overflow-y-auto p-4 sm:p-5">{children}</div>
             </motion.div>
           </motion.div>
         </>
@@ -77,16 +77,16 @@ export const ConfirmDialog: React.FC<ConfirmProps> = ({
         <>
           <motion.div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          <motion.div className="fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center sm:p-4"
             role="alertdialog" aria-modal="true" aria-label={title}>
             <motion.div
-              className="card w-full max-w-sm text-center overflow-hidden"
+              className="card w-full max-w-sm text-center overflow-hidden rounded-[24px]"
               initial={{ scale: 0.7, y: 30, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.7, y: 30, opacity: 0 }}
               transition={{ type: 'spring', damping: 18, stiffness: 250 }}
             >
-              <div className="p-6 space-y-4">
+              <div className="p-5 space-y-4 sm:p-6">
                 <motion.div className="inline-flex" initial={{ scale: 0 }} animate={{ scale: 1 }}
                   transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}>
                   <Icon8 name={danger ? 'warning' : 'transfer'} size={44} />
@@ -95,13 +95,13 @@ export const ConfirmDialog: React.FC<ConfirmProps> = ({
                   <h3 className="font-display font-bold text-lg" style={{ color: 'var(--text-primary)' }}>{title}</h3>
                   {message && <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{message}</p>}
                   {amount != null && (
-                    <div className="text-3xl font-display font-black mt-2" style={{ color: 'var(--brand)' }}>
+                    <div className="mt-2 break-words text-2xl font-display font-black sm:text-3xl" style={{ color: 'var(--brand)' }}>
                       {formatCurrency(amount)}
                     </div>
                   )}
                 </div>
                 {note && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{note}</p>}
-                <div className="flex gap-3">
+                <div className="flex flex-col-reverse gap-3 sm:flex-row">
                   <button onClick={onClose} className="flex-1 btn-secondary py-2.5 text-sm">Cancel</button>
                   <button
                     onClick={onConfirm}
@@ -127,7 +127,7 @@ export const SuccessOverlay: React.FC<{ show: boolean; label: string; amount?: n
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[60] flex flex-col items-center justify-center"
+          className="fixed inset-0 z-[60] flex flex-col items-center justify-center px-4 text-center"
           style={{ background: 'rgba(22,163,74,0.96)', backdropFilter: 'blur(4px)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -137,12 +137,12 @@ export const SuccessOverlay: React.FC<{ show: boolean; label: string; amount?: n
         >
           <motion.div className="inline-flex" initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', damping: 12 }}><Icon8 name="success" size={72} /></motion.div>
-          <motion.h2 className="text-3xl font-display font-black text-white mt-4"
+          <motion.h2 className="mt-4 max-w-[18rem] text-2xl font-display font-black text-white sm:max-w-none sm:text-3xl"
             initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
             {label} Successful!
           </motion.h2>
           {amount != null && (
-            <motion.div className="text-4xl font-display font-bold text-white mt-1"
+            <motion.div className="mt-1 max-w-[18rem] break-words text-3xl font-display font-bold text-white sm:max-w-none sm:text-4xl"
               initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
               {formatCurrency(amount)}
             </motion.div>

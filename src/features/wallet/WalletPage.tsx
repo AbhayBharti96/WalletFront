@@ -308,7 +308,7 @@ export default function WalletPage() {
   const txList = (transactions?.content ?? []).filter(tx => isTransactionForUser(tx, user?.id))
 
   return (
-    <div className="p-4 lg:p-6 space-y-5 max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl space-y-5 p-3 sm:p-4 lg:p-6">
       <SuccessOverlay show={showSuccess} label={successLabel} amount={successAmount} />
 
       {scratchOpen && (
@@ -327,7 +327,7 @@ export default function WalletPage() {
       </div>
 
       {/* Balance card */}
-      <motion.div className="rounded-3xl p-6 relative overflow-hidden"
+      <motion.div className="relative overflow-hidden rounded-3xl p-4 sm:p-6"
         style={{ background: 'linear-gradient(135deg,#052e16 0%,#0d3320 50%,#0a0f1e 100%)' }}
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="absolute top-0 right-0 w-72 h-72 blur-3xl opacity-20 pointer-events-none"
@@ -348,16 +348,16 @@ export default function WalletPage() {
           </div>
           {loading
             ? <div className="skeleton h-10 w-44 rounded-lg mb-2" />
-            : <motion.div className="text-4xl font-display font-black text-white mb-1"
+            : <motion.div className="mb-1 break-words text-3xl font-display font-black text-white sm:text-4xl"
                 initial={{ scale: 0.9 }} animate={{ scale: 1 }}>
                 {showBalance ? formatCurrency(balance?.balance ?? 0) : '₹••••••'}
               </motion.div>
           }
-          <div className="text-xs mb-5" style={{ color: '#4ade80' }}>
+          <div className="mb-5 text-xs leading-5 sm:leading-normal" style={{ color: '#4ade80' }}>
             {balance?.status ?? 'ACTIVE'} - Last updated {loginAt ? formatDate(loginAt, 'hh:mm A') : 'just now'}
           </div>
 
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Wallet actions">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" role="group" aria-label="Wallet actions">
             {[
               { label: 'Top Up', icon: 'topup', key: 'topup', bg: '#22c55e' },
               { label: 'Transfer', icon: 'transfer', key: 'transfer', bg: 'rgba(255,255,255,0.12)' },
@@ -367,7 +367,7 @@ export default function WalletPage() {
               <motion.button key={btn.key}
                 onClick={() => btn.key === 'history' ? navigate('/transactions') : setModal(btn.key as any)}
                 whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all inline-flex items-center gap-2"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all sm:w-auto"
                 style={{ background: btn.bg, border: '1px solid rgba(255,255,255,0.1)' }}>
                 <Icon8 name={btn.icon as React.ComponentProps<typeof Icon8>['name']} size={16} color="#ffffff" />
                 {btn.label}
@@ -378,8 +378,8 @@ export default function WalletPage() {
       </motion.div>
 
       {/* Recent transactions */}
-      <motion.div className="card p-5" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-        <div className="flex items-center justify-between mb-4">
+      <motion.div className="card p-4 sm:p-5" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <div className="mb-4 flex items-center justify-between gap-3">
           <h3 className="font-display font-semibold" style={{ color: 'var(--text-primary)' }}>Recent Transactions</h3>
           <button onClick={() => navigate('/transactions')} className="text-xs font-medium" style={{ color: 'var(--brand)' }}>View All →</button>
         </div>
@@ -404,7 +404,7 @@ export default function WalletPage() {
                     : (tx.description || tx.referenceId)
                   return (
                     <motion.div key={tx.id}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+                      className="flex flex-col items-start gap-3 rounded-xl px-3 py-3 sm:flex-row sm:items-center sm:py-2.5"
                       style={{ background: 'var(--bg-primary)' }}
                       initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}>
                       <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
@@ -420,7 +420,7 @@ export default function WalletPage() {
                           {descriptor} · {formatDate(tx.createdAt, 'DD MMM, hh:mm A')}
                         </div>
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="flex-shrink-0 text-left sm:ml-auto sm:text-right">
                         <div className="text-sm font-bold" style={{ color: credit ? 'var(--success)' : 'var(--danger)' }}>
                           {credit ? '+' : '-'}{formatCurrency(tx.amount)}
                         </div>
@@ -444,10 +444,10 @@ export default function WalletPage() {
           </div>
           <div>
             <div className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>Quick amounts</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               {QUICK_AMOUNTS.map(a => (
                 <button key={a} onClick={() => setTopupAmount(String(a))}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                  className="rounded-lg px-3 py-2 text-xs font-semibold transition-all"
                   style={{
                     background: topupAmount === String(a) ? 'var(--brand)' : 'var(--bg-primary)',
                     color: topupAmount === String(a) ? '#fff' : 'var(--text-secondary)',
@@ -459,7 +459,7 @@ export default function WalletPage() {
             </div>
           </div>
           <div className="p-3 rounded-xl text-xs" style={{ background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>
-            <span className="inline-flex items-center gap-1">
+            <span className="inline-flex items-start gap-1 leading-5">
               <Icon8 name="info" size={14} />
               Top-up adds wallet balance only. Reward scratch card is available on successful transfer.
             </span>
@@ -512,7 +512,7 @@ export default function WalletPage() {
             </div>
 
             {selectedReceiver && (
-              <div className="mt-2 flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-xs"
+              <div className="mt-2 flex flex-col items-start justify-between gap-3 rounded-lg px-3 py-2 text-xs sm:flex-row sm:items-center"
                 style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
                 <div className="min-w-0">
                   <div className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{selectedReceiver.name}</div>
@@ -570,7 +570,7 @@ export default function WalletPage() {
             </div>
           ))}
           <div className="p-3 rounded-xl text-xs" style={{ background: 'var(--bg-primary)', color: 'var(--text-muted)' }}>
-            <span className="inline-flex items-center gap-1">
+            <span className="inline-flex items-start gap-1 leading-5">
               <Icon8 name="star" size={14} />
               Win a scratch card after a successful transfer.
             </span>
@@ -595,16 +595,16 @@ export default function WalletPage() {
             <input id="withdraw-amount" type="number" placeholder="Enter amount" min={1} max={balance?.balance ?? 0}
               value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)} className="input-field" />
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             {[500, 1000, 2000].map(a => (
               <button key={a} onClick={() => setWithdrawAmount(String(Math.min(a, balance?.balance ?? 0)))}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                className="rounded-lg px-3 py-2 text-xs font-semibold"
                 style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
                 ₹{a.toLocaleString('en-IN')}
               </button>
             ))}
             <button onClick={() => setWithdrawAmount(String(balance?.balance ?? 0))}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+              className="rounded-lg px-3 py-2 text-xs font-semibold"
               style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
               Max
             </button>

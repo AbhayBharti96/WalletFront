@@ -158,13 +158,13 @@ export function TransactionsPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6 space-y-5 max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl space-y-5 p-3 sm:p-4 lg:p-6">
       <div><h1 className="text-xl font-display font-bold" style={{ color: 'var(--text-primary)' }}>Transactions</h1>
         <p className="text-sm mt-0.5" style={{ color: softSecondary }}>Full history of your wallet activity</p></div>
 
       {/* Download bar */}
-      <motion.div className="card p-4 flex flex-wrap gap-3 items-end" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <div>
+      <motion.div className="card flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-end" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="w-full sm:w-auto">
           <label htmlFor="from-date" className="block text-xs font-semibold mb-1" style={{ color: softMuted }}>From</label>
           <div className="relative">
             <input
@@ -187,7 +187,7 @@ export function TransactionsPage() {
             </button>
           </div>
         </div>
-        <div>
+        <div className="w-full sm:w-auto">
           <label htmlFor="to-date" className="block text-xs font-semibold mb-1" style={{ color: softMuted }}>To</label>
           <div className="relative">
             <input
@@ -210,14 +210,14 @@ export function TransactionsPage() {
             </button>
           </div>
         </div>
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <button
             onClick={() => {
               if (!from || !to) { toast.error('Select a date range'); return }
               setExportOpen(open => !open)
             }}
             disabled={downloading}
-            className="btn-primary py-2.5 text-sm flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 py-2.5 text-sm sm:w-auto btn-primary"
             aria-haspopup="menu"
             aria-expanded={exportOpen}
           >
@@ -254,10 +254,10 @@ export function TransactionsPage() {
       </motion.div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }} role="tablist">
+      <div className="grid w-full grid-cols-2 gap-1 rounded-xl p-1 sm:w-fit sm:flex" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }} role="tablist">
         {[{ id: 'txn', label: 'Transactions' }, { id: 'ledger', label: 'Ledger' }].map(t => (
           <button key={t.id} role="tab" aria-selected={tab === t.id as any} onClick={() => setTab(t.id as any)}
-            className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+            className="rounded-lg px-4 py-2 text-sm font-semibold transition-all"
             style={{ background: tab === t.id ? 'var(--brand)' : 'transparent', color: tab === t.id ? '#fff' : softSecondary }}>
             {t.label}
           </button>
@@ -310,7 +310,7 @@ export function TransactionsPage() {
                     if (row.kind === 'wallet') {
                       const tx = row.tx
                       return (
-                        <motion.div key={`wallet-redeem-${tx.id}`} className="flex items-center gap-4 px-5 py-4"
+                        <motion.div key={`wallet-redeem-${tx.id}`} className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5"
                           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                           <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
                             style={{ background: '#fee2e2', color: '#b91c1c' }}>
@@ -337,7 +337,7 @@ export function TransactionsPage() {
                     const tx = row.tx
                     const redeemKind = classifyRedeemKind(tx.description)
                     return (
-                      <motion.div key={`reward-redeem-${tx.id}`} className="flex items-center gap-4 px-5 py-4"
+                        <motion.div key={`reward-redeem-${tx.id}`} className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5"
                         initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
                           style={{ background: '#ede9fe', color: '#7c3aed' }}>
@@ -380,7 +380,7 @@ export function TransactionsPage() {
                       ? `${counterparty}${tx.description && tx.description !== 'Transfer' ? ` - ${tx.description}` : ''}`
                       : (tx.description || `Ref: ${tx.referenceId}`)
                     return (
-                      <motion.div key={tx.id} className="flex items-center gap-4 px-5 py-4"
+                      <motion.div key={tx.id} className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5"
                         initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
                           style={{ background: credit ? '#dcfce7' : '#fee2e2', color: credit ? '#15803d' : '#b91c1c' }}>
@@ -402,7 +402,7 @@ export function TransactionsPage() {
                     )
                   })}
                 </div>
-                <div className="flex items-center justify-between px-5 py-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex flex-col gap-3 px-4 py-4 border-t sm:flex-row sm:items-center sm:justify-between sm:px-5" style={{ borderColor: 'var(--border)' }}>
                   <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="btn-secondary py-1.5 px-4 text-xs" style={{ opacity: page === 0 ? 0.4 : 1 }} aria-label="Previous page">← Prev</button>
                   <span className="text-xs" style={{ color: softMuted }}>Page {page + 1} of {totalPages}</span>
                   <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="btn-secondary py-1.5 px-4 text-xs" style={{ opacity: page >= totalPages - 1 ? 0.4 : 1 }} aria-label="Next page">Next →</button>
@@ -420,7 +420,7 @@ export function TransactionsPage() {
           ) : (
             <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
               {ledger.content.map((e, i) => (
-                <motion.div key={e.id} className="flex items-center gap-4 px-5 py-4"
+                <motion.div key={e.id} className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-5"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}>
                   <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
                     style={{ background: e.type === 'CREDIT' ? '#dcfce7' : '#fee2e2', color: e.type === 'CREDIT' ? '#15803d' : '#b91c1c' }}>{e.type === 'CREDIT' ? '↑' : '↓'}</div>
