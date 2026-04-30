@@ -106,7 +106,7 @@ export default function LandingPage() {
             <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3 lg:w-auto lg:flex lg:items-center">
               <button
                 onClick={toggle}
-                className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border px-3 py-2 text-xs font-medium transition hover:bg-white/10"
+                className="inline-flex h-10 w-full items-center justify-center rounded-full border text-xs font-medium transition hover:bg-white/10 sm:w-10"
                 style={{
                   color: isDark ? '#e2e8f0' : '#0f172a',
                   borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(15,23,42,0.25)',
@@ -115,7 +115,6 @@ export default function LandingPage() {
                 aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 <Icon8 name={isDark ? 'sun' : 'moon'} size={16} />
-                <span>{isDark ? 'Dark' : 'Light'}</span>
               </button>
               <button
                 onClick={() => navigate(accessToken ? '/dashboard' : '/login')}

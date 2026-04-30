@@ -152,8 +152,8 @@ export default function AppLayout() {
       </nav>
 
       {/* User chip */}
-      <div className="p-3 border-t" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl" style={{ background: 'var(--bg-primary)' }}>
+      <div className="p-3 border-t space-y-2" style={{ borderColor: 'var(--border)' }}>
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl border" style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)' }}>
           <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center font-bold text-white text-sm flex-shrink-0"
             style={{ background: 'linear-gradient(135deg,#22c55e,#6366f1)' }}>
             {profilePhoto ? <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" /> : initial}
@@ -168,11 +168,13 @@ export default function AppLayout() {
             onNav?.()
             requestLogout()
           }}
-          className="w-full mt-2 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-85"
-          style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--danger)' }}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-85 border"
+          style={{ background: 'var(--bg-primary)', borderColor: 'var(--border)', color: 'var(--danger)' }}
           aria-label="Sign out"
         >
-          <Icon8 name="logout" size={16} />
+          <span className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.12)' }} aria-hidden="true">
+            <Icon8 name="logout" size={16} />
+          </span>
           <span>Sign Out</span>
         </button>
       </div>
@@ -231,10 +233,9 @@ export default function AppLayout() {
           <div className="flex items-center gap-2">
             {/* Theme toggle */}
             <button onClick={toggle} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-medium transition-all hover:scale-105 sm:px-3"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl transition-all hover:scale-105"
               style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
               <Icon8 name={isDark ? 'sun' : 'moon'} size={18} />
-              <span className="hidden sm:inline">{isDark ? 'Dark' : 'Light'}</span>
             </button>
 
             {/* Notification bell */}

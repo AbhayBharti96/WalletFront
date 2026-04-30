@@ -152,8 +152,9 @@ export function ProfilePage() {
     <div className="p-4 lg:p-6 max-w-2xl mx-auto space-y-5">
       <div><h1 className="text-xl font-display font-bold" style={{ color: 'var(--text-primary)' }}>My Profile</h1></div>
 
-      <motion.div className="card p-6 flex items-center gap-5" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="flex flex-col items-center gap-2">
+      <motion.div className="card p-4 sm:p-6" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+        <div className="flex flex-col items-center gap-2 sm:flex-shrink-0">
           <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
             style={{ background: 'linear-gradient(135deg,#22c55e,#6366f1)' }} aria-hidden="true">
             {photoDataUrl
@@ -171,17 +172,20 @@ export function ProfilePage() {
           )}
         </div>
 
-        <div className="flex-1">
-          <h2 className="font-display font-bold text-lg" style={{ color: 'var(--text-primary)' }}>{p?.fullName || 'User'}</h2>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{p?.email}</p>
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
+        <div className="min-w-0 flex-1 text-center sm:text-left">
+          <h2 className="font-display font-bold text-lg break-words" style={{ color: 'var(--text-primary)' }}>{p?.fullName || 'User'}</h2>
+          <p className="text-sm break-all sm:break-normal" style={{ color: 'var(--text-secondary)' }}>{p?.email}</p>
+          <div className="flex items-center justify-center gap-2 mt-2 flex-wrap sm:justify-start">
             <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: 'var(--brand-light)', color: 'var(--brand)' }}>{user?.role}</span>
             <span className="text-xs px-2 py-0.5 rounded-full font-semibold inline-flex items-center gap-1" style={{ background: kycI.bg, color: kycI.color }}>
               <KycIcon fontSize="inherit" /> {effectiveKycStatus}
             </span>
           </div>
         </div>
-        <button onClick={() => setEditing(!editing)} className="btn-secondary py-2 px-4 text-xs">{editing ? 'Cancel' : 'Edit'}</button>
+        <div className="sm:self-start">
+          <button onClick={() => setEditing(!editing)} className="btn-secondary w-full py-2 px-4 text-xs sm:w-auto">{editing ? 'Cancel' : 'Edit'}</button>
+        </div>
+        </div>
       </motion.div>
 
       {editing && (

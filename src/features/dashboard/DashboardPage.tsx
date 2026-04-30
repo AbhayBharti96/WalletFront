@@ -8,6 +8,7 @@ import { formatCurrency, getKycInfo, getTierStyle, getTierIcon, getTierProgress 
 import { Skeleton } from '../../shared/components/ui'
 import { Icon8 } from '../../shared/components/Icon8'
 import { buildWeeklyCashflow } from './weeklyCashflow'
+import WalletActionModals, { type WalletActionModalType } from '../wallet/WalletActionModals'
 
 const SpendingOverviewChart = lazy(() => import('./SpendingOverviewChart'))
 
@@ -60,6 +61,7 @@ export default function DashboardPage() {
   const { balance, loading: wLoad, transactions } = useAppSelector(s => s.wallet)
   const { summary, loading: rLoad } = useAppSelector(s => s.rewards)
   const [showBalance, setShowBalance] = useState(false)
+  const [quickActionModal, setQuickActionModal] = useState<WalletActionModalType>(null)
 
   useEffect(() => {
     if (!user?.id) return
@@ -94,6 +96,7 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-[1080px] space-y-4 p-3 sm:p-4 lg:p-5">
+      <WalletActionModals modal={quickActionModal} onClose={() => setQuickActionModal(null)} />
       <motion.section
         className="rounded-[24px] p-4 lg:p-5"
         style={{ background: 'linear-gradient(120deg, #cde8dd 0%, #c7e0e4 100%)', border: '1px solid #b7d2ce' }}
@@ -226,12 +229,12 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="text-xl leading-tight font-bold" style={{ color: '#1d2b44' }}>Spending Overview</h3>
               <p className="text-xs mt-0.5" style={{ color: '#6c7f90' }}>Debit vs credit this week</p>
             </div>
-            <div className="flex items-center gap-3 text-xs font-bold">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-bold">
               <span className="inline-flex items-center gap-1" style={{ color: '#22c55e' }}>
                 <span className="w-2 h-2 rounded-full" style={{ background: '#22c55e' }} />
                 Credit
@@ -298,21 +301,21 @@ export default function DashboardPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="flex items-center justify-between mb-3">
+          <div className="mb-3 flex items-center justify-between gap-3">
           <h3 className="text-sm font-bold" style={{ color: '#1d2b44' }}>Quick Actions</h3>
           <span className="text-[10px] font-semibold" style={{ color: '#98a6b6' }}>Fast access</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3" role="group" aria-label="Quick actions">
           {([
-            { icon: 'topup', label: 'Top Up', to: '/wallet', color: '#22c55e' },
-            { icon: 'transfer', label: 'Transfer', to: '/wallet', color: '#6366f1' },
-            { icon: 'withdraw', label: 'Withdraw', to: '/wallet', color: '#f59e0b' },
+            { icon: 'topup', label: 'Top Up', modal: 'topup', color: '#22c55e' },
+            { icon: 'transfer', label: 'Transfer', modal: 'transfer', color: '#6366f1' },
+            { icon: 'withdraw', label: 'Withdraw', modal: 'withdraw', color: '#f59e0b' },
             { icon: 'rewards', label: 'Redeem', to: '/rewards', color: '#ec4899' },
           ] as const).map((a, i) => (
             <motion.button
               key={a.label}
-              onClick={() => navigate(a.to)}
-              className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all"
+              onClick={() => 'modal' in a ? setQuickActionModal(a.modal) : navigate(a.to)}
+              className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-2xl p-3 text-center transition-all sm:min-h-[100px] sm:p-4"
               style={{ background: `${a.color}10`, border: `1px solid ${a.color}25`, color: a.color }}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -322,7 +325,7 @@ export default function DashboardPage() {
               aria-label={a.label}
             >
               <span className="inline-flex" aria-hidden="true"><Icon8 name={a.icon} size={20} /></span>
-              <span className="text-xs font-semibold" style={{ color: '#44566f' }}>{a.label}</span>
+              <span className="text-xs font-semibold leading-tight" style={{ color: '#44566f' }}>{a.label}</span>
             </motion.button>
           ))}
         </div>
