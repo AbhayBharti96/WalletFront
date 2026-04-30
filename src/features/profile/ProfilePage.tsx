@@ -6,9 +6,14 @@ import { kycService, userService } from '../../core/api'
 import { getApiErrorMessage } from '../../shared/apiErrors'
 import { formatDate, getKycInfo } from '../../shared/utils'
 import type { UserProfile } from '../../types'
-import { updateKycStatus } from '../../store/authSlice'
+import { updateKycStatus, updateUserProfile } from '../../store/authSlice'
 
 const profilePhotoKey = (userId?: number) => `payvault-profile-photo:${userId ?? 'anon'}`
+
+const normalizeProfile = (profile: UserProfile & { name?: string }): UserProfile => ({
+  ...profile,
+  fullName: profile.fullName || profile.name || '',
+})
 
 const fileToDataUrl = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -47,12 +52,13 @@ export function ProfilePage() {
 
       const liveKyc = kycResp?.data?.status
       const mergedProfile: UserProfile = {
-        ...profileResp.data,
+        ...normalizeProfile(profileResp.data as UserProfile & { name?: string }),
         kycStatus: liveKyc ?? profileResp.data.kycStatus ?? user?.kycStatus,
       }
 
       setProfile(mergedProfile)
       setForm({ name: mergedProfile.fullName || '', phone: mergedProfile.phone || '' })
+      dispatch(updateUserProfile(mergedProfile))
 
       if (liveKyc && liveKyc !== user?.kycStatus) {
         dispatch(updateKycStatus(liveKyc))
@@ -114,8 +120,10 @@ export function ProfilePage() {
     setSaving(true)
     try {
       const { data } = await userService.updateProfile(user!.id, { name: trimmedName, phone: normalizedPhone })
-      setProfile(data.data)
-      setForm({ name: data.data.fullName || '', phone: data.data.phone || '' })
+      const updatedProfile = normalizeProfile(data.data as UserProfile & { name?: string })
+      setProfile(updatedProfile)
+      setForm({ name: updatedProfile.fullName || '', phone: updatedProfile.phone || '' })
+      dispatch(updateUserProfile(updatedProfile))
       setEditing(false)
       notify('success', 'Profile Updated', 'Your profile details were updated successfully.')
       toast.success('Profile saved.')
