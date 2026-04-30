@@ -12,6 +12,7 @@ import { formatCurrency, formatDate, getTransactionDisplayTitle, getTransferCoun
 import { StatusBadge } from '../../shared/components/ui'
 import type { TransferRequest, RazorpayOptions, ReceiverSuggestion } from '../../types'
 import { Icon8 } from '../../shared/components/Icon8'
+import { addPendingScratchCard, removePendingScratchCard } from '../../shared/scratchCards'
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000]
 
@@ -72,6 +73,7 @@ export default function WalletPage() {
   const [scratchOpen, setScratchOpen]     = useState(false)
   const [scratchPoints, setScratchPoints] = useState(0)
   const [scratchAmount, setScratchAmount] = useState(0)
+  const [scratchCardId, setScratchCardId] = useState<string | null>(null)
 
   // Form values
   const [topupAmount, setTopupAmount]       = useState('')
@@ -256,9 +258,11 @@ export default function WalletPage() {
     try {
       await rewardsService.earnInternal(user!.id, scratchAmount)
     } catch (_) { /* best effort */ }
+    if (user?.id && scratchCardId) removePendingScratchCard(user.id, scratchCardId)
     dispatch(fetchRewardSummary())
     notify('success', `+${pts} Points Added!`, `Reward points for your transfer of ${formatCurrency(scratchAmount)}`)
     toast.success(`${pts} reward points added to your account!`)
+    setScratchCardId(null)
   }
 
   // ── Transfer ───────────────────────────────────────────────────────────────
@@ -277,6 +281,15 @@ export default function WalletPage() {
       triggerSuccess('Transfer', payload.amount)
       const earned = calcPoints(payload.amount)
       if (earned > 0) {
+        const pendingCard = {
+          id: `${Date.now()}-${payload.receiverId}-${earned}`,
+          userId: user!.id,
+          points: earned,
+          transactionAmount: payload.amount,
+          createdAt: new Date().toISOString(),
+        }
+        addPendingScratchCard(pendingCard)
+        setScratchCardId(pendingCard.id)
         setScratchPoints(earned)
         setScratchAmount(payload.amount)
         setTimeout(() => setScratchOpen(true), 2600)
@@ -316,7 +329,10 @@ export default function WalletPage() {
           points={scratchPoints}
           transactionAmount={scratchAmount}
           onRevealed={handleScratchRevealed}
-          onClose={() => setScratchOpen(false)}
+          onClose={() => {
+            setScratchOpen(false)
+            setScratchCardId(null)
+          }}
         />
       )}
 

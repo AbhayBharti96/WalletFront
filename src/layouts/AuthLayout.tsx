@@ -71,10 +71,9 @@ export default function AuthLayout() {
           </div>
           <div className="ml-auto">
             <button onClick={toggle} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="px-3 py-2 rounded-xl transition-all inline-flex items-center gap-1.5 text-xs font-medium"
+              className="h-10 w-10 rounded-xl transition-all inline-flex items-center justify-center text-xs font-medium"
               style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
               <Icon8 name={isDark ? 'sun' : 'moon'} size={18} />
-              <span style={{ color: 'var(--text-secondary)' }}>{isDark ? 'Dark' : 'Light'}</span>
             </button>
           </div>
         </div>

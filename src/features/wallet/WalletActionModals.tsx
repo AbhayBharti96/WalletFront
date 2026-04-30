@@ -9,6 +9,7 @@ import { ScratchCardModal } from '../../shared/components/ScratchCard'
 import { Icon8 } from '../../shared/components/Icon8'
 import { calcPoints, formatCurrency, generateKey } from '../../shared/utils'
 import type { ReceiverSuggestion, RazorpayOptions, TransferRequest } from '../../types'
+import { addPendingScratchCard, removePendingScratchCard } from '../../shared/scratchCards'
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000]
 const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js'
@@ -66,6 +67,7 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
   const [scratchOpen, setScratchOpen] = useState(false)
   const [scratchPoints, setScratchPoints] = useState(0)
   const [scratchAmount, setScratchAmount] = useState(0)
+  const [scratchCardId, setScratchCardId] = useState<string | null>(null)
   const [topupAmount, setTopupAmount] = useState('')
   const [transfer, setTransfer] = useState<{ receiverId: string; amount: string; description: string }>({
     receiverId: '',
@@ -249,9 +251,11 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
     try {
       await rewardsService.earnInternal(user!.id, scratchAmount)
     } catch {}
+    if (user?.id && scratchCardId) removePendingScratchCard(user.id, scratchCardId)
     dispatch(fetchRewardSummary())
     notify('success', `+${pts} Points Added!`, `Reward points for your transfer of ${formatCurrency(scratchAmount)}`)
     toast.success(`${pts} reward points added to your account!`)
+    setScratchCardId(null)
   }
 
   const handleTransferConfirm = async () => {
@@ -271,6 +275,15 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
       triggerSuccess('Transfer', payload.amount)
       const earned = calcPoints(payload.amount)
       if (earned > 0) {
+        const pendingCard = {
+          id: `${Date.now()}-${payload.receiverId}-${earned}`,
+          userId: user!.id,
+          points: earned,
+          transactionAmount: payload.amount,
+          createdAt: new Date().toISOString(),
+        }
+        addPendingScratchCard(pendingCard)
+        setScratchCardId(pendingCard.id)
         setScratchPoints(earned)
         setScratchAmount(payload.amount)
         setTimeout(() => setScratchOpen(true), 2600)
@@ -309,7 +322,10 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
           points={scratchPoints}
           transactionAmount={scratchAmount}
           onRevealed={handleScratchRevealed}
-          onClose={() => setScratchOpen(false)}
+          onClose={() => {
+            setScratchOpen(false)
+            setScratchCardId(null)
+          }}
         />
       )}
 

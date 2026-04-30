@@ -103,10 +103,10 @@ export default function LandingPage() {
               <a href="#dashboard" className="transition hover:text-white">Dashboard</a>
             </nav>
 
-            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3 lg:w-auto lg:flex lg:items-center">
+            <div className="flex w-full items-center gap-2 sm:gap-3 lg:w-auto">
               <button
                 onClick={toggle}
-                className="inline-flex h-10 w-full items-center justify-center rounded-full border text-xs font-medium transition hover:bg-white/10 sm:w-10"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-xs font-medium transition hover:bg-white/10"
                 style={{
                   color: isDark ? '#e2e8f0' : '#0f172a',
                   borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(15,23,42,0.25)',
@@ -118,7 +118,7 @@ export default function LandingPage() {
               </button>
               <button
                 onClick={() => navigate(accessToken ? '/dashboard' : '/login')}
-                className="w-full rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-white/10"
+                className="min-w-0 flex-1 rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-white/10 lg:w-auto lg:flex-none"
                 style={{
                   color: isDark ? '#e2e8f0' : '#0f172a',
                   borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(15,23,42,0.25)',
@@ -129,7 +129,7 @@ export default function LandingPage() {
               </button>
               <button
                 onClick={() => navigate(accessToken ? '/dashboard' : '/signup')}
-                className="w-full rounded-full px-4 py-2 text-sm font-semibold text-white transition hover:scale-[1.02]"
+                className="min-w-0 flex-1 rounded-full px-4 py-2 text-sm font-semibold text-white transition hover:scale-[1.02] lg:w-auto lg:flex-none"
                 style={{ background: 'var(--brand)' }}
               >
                 {accessToken ? 'Open Wallet' : 'Get Started'}

@@ -3,12 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import toast from 'react-hot-toast'
 import { useAppDispatch, useAppSelector, useNotify, useTheme } from '../../shared/hooks'
+import { rewardsService } from '../../core/api'
 import { fetchRewardSummary, fetchCatalog, fetchRewardTransactions, redeemReward, redeemPointsThunk } from '../../store/rewardsSlice'
 import { fetchBalance } from '../../store/walletSlice'
 import { Modal, Skeleton } from '../../shared/components/ui'
+import { ScratchCardModal } from '../../shared/components/ScratchCard'
 import { formatCurrency, formatDate, getTierStyle, getTierIcon, getTierProgress } from '../../shared/utils'
-import type { RewardItem, RewardTier } from '../../types'
+import type { PendingScratchCard, RewardItem, RewardTier } from '../../types'
 import { Icon8 } from '../../shared/components/Icon8'
+import { getPendingScratchCards, removePendingScratchCard, subscribeScratchCards } from '../../shared/scratchCards'
 
 const TIER_RANK: Record<RewardTier, number> = {
   SILVER: 0,
@@ -16,14 +19,24 @@ const TIER_RANK: Record<RewardTier, number> = {
   PLATINUM: 2,
 }
 
+const isRewardCurrentlyVisible = (item: RewardItem) => {
+  const now = Date.now()
+  const activeFrom = item.activeFrom ? new Date(item.activeFrom).getTime() : null
+  const activeUntil = item.activeUntil ? new Date(item.activeUntil).getTime() : null
+  if (activeFrom && activeFrom > now) return false
+  if (activeUntil && activeUntil < now) return false
+  return item.active
+}
+
 const canSeeCatalogItem = (item: RewardItem, currentTier?: RewardTier) => {
+  if (!isRewardCurrentlyVisible(item)) return false
   if (!item.tierRequired) return true
   if (!currentTier) return false
   return TIER_RANK[currentTier] >= TIER_RANK[item.tierRequired]
 }
 
 // ── Redeem success animation overlay ────────────────────────────────────────
-const RedeemSuccessModal: React.FC<{ coupon?: string; itemName: string; onClose: () => void }> = ({ coupon, itemName, onClose }) => (
+const RedeemSuccessModal: React.FC<{ coupon?: string; itemName: string; expiresAt?: string | null; onClose: () => void }> = ({ coupon, itemName, expiresAt, onClose }) => (
   <AnimatePresence>
     <motion.div className="fixed inset-0 z-[60] flex items-end justify-center p-3 sm:items-center sm:p-4"
       style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}
@@ -53,6 +66,11 @@ const RedeemSuccessModal: React.FC<{ coupon?: string; itemName: string; onClose:
               className="text-sm font-medium" style={{ color: 'var(--success)' }}>
               Cashback credited to your wallet!
             </motion.p>
+          )}
+          {expiresAt && (
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Valid until {formatDate(expiresAt, 'DD MMM YYYY, hh:mm A')}
+            </p>
           )}
           <button onClick={onClose} className="btn-primary w-full py-2.5 text-sm" autoFocus>Done</button>
         </div>
@@ -99,6 +117,11 @@ const RewardCard: React.FC<{ item: RewardItem; userPoints: number; onRedeem: (it
             Get {formatCurrency(item.cashbackAmount)} cashback
           </p>
         )}
+        {item.activeUntil && (
+          <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+            Expires {formatDate(item.activeUntil, 'DD MMM YYYY, hh:mm A')}
+          </p>
+        )}
         <p className="text-xs mt-1" style={{ color: item.stock > 0 ? 'var(--text-muted)' : 'var(--danger)' }}>
           {item.stock > 0 ? `${item.stock} remaining` : 'Out of stock'}
         </p>
@@ -136,12 +159,14 @@ export default function RewardsPage() {
   const { user } = useAppSelector(s => s.auth)
   const { summary, catalog, transactions, loading } = useAppSelector(s => s.rewards)
 
-  const [tab, setTab] = useState<'catalog' | 'history'>('catalog')
+  const [tab, setTab] = useState<'catalog' | 'scratch' | 'history'>('catalog')
   const [confirmItem, setConfirmItem] = useState<RewardItem | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
-  const [successData, setSuccessData] = useState<{ coupon?: string; itemName: string } | null>(null)
+  const [successData, setSuccessData] = useState<{ coupon?: string; itemName: string; expiresAt?: string | null } | null>(null)
   const [redeemPts, setRedeemPts] = useState('')
   const [ptsLoading, setPtsLoading] = useState(false)
+  const [pendingScratchCards, setPendingScratchCards] = useState<PendingScratchCard[]>([])
+  const [activeScratchCard, setActiveScratchCard] = useState<PendingScratchCard | null>(null)
 
   useEffect(() => {
     if (user?.id) {
@@ -149,8 +174,19 @@ export default function RewardsPage() {
     }
   }, [dispatch, user?.id])
 
+  useEffect(() => {
+    if (!user?.id) {
+      setPendingScratchCards([])
+      return
+    }
+    const sync = () => setPendingScratchCards(getPendingScratchCards(user.id))
+    sync()
+    return subscribeScratchCards(sync)
+  }, [user?.id])
+
   const handleRedeemItem = async () => {
     if (!confirmItem) return
+    const redeemedItem = confirmItem
     setActionLoading(true)
     const res = await dispatch(redeemReward(confirmItem.id))
     setActionLoading(false); setConfirmItem(null)
@@ -162,9 +198,9 @@ export default function RewardsPage() {
       setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 50, origin: { x: 1 }, colors: ['#818cf8', '#f472b6'] }), 400)
 
       const redemption = res.payload?.data
-      setSuccessData({ coupon: redemption?.couponCode, itemName: confirmItem.name })
-      dispatch(fetchRewardSummary()); dispatch(fetchRewardTransactions()); dispatch(fetchBalance())
-      notify('success', 'Reward Redeemed!', `${confirmItem.name} successfully redeemed`)
+      setSuccessData({ coupon: redemption?.couponCode, itemName: redeemedItem.name, expiresAt: redeemedItem.activeUntil })
+      dispatch(fetchRewardSummary()); dispatch(fetchRewardTransactions()); dispatch(fetchBalance()); dispatch(fetchCatalog())
+      notify('success', 'Reward Redeemed!', `${redeemedItem.name} successfully redeemed`)
     } else {
       toast.error(res.payload as string || 'Redemption failed')
     }
@@ -201,10 +237,36 @@ export default function RewardsPage() {
   const effectiveTierText = isDark && isSilver ? '#dbe7ff' : tierStyle.text
   const effectiveTierBorder = isDark && isSilver ? '#3f567a' : tierStyle.border
 
+  const handlePendingScratchClaim = async (card: PendingScratchCard) => {
+    try {
+      await rewardsService.earnInternal(card.userId, card.transactionAmount)
+      await dispatch(fetchRewardSummary())
+      await dispatch(fetchBalance())
+      await dispatch(fetchRewardTransactions())
+      removePendingScratchCard(card.userId, card.id)
+      setPendingScratchCards(cards => cards.filter(item => item.id !== card.id))
+      notify('success', `+${card.points} Points Added!`, `Reward points for your transfer of ${formatCurrency(card.transactionAmount)}`)
+      toast.success(`${card.points} reward points added to your account!`)
+    } catch {
+      toast.error('Could not claim scratch card points')
+    }
+  }
+
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-3 sm:p-4 lg:p-6">
       {successData && (
-        <RedeemSuccessModal coupon={successData.coupon} itemName={successData.itemName} onClose={() => setSuccessData(null)} />
+        <RedeemSuccessModal coupon={successData.coupon} itemName={successData.itemName} expiresAt={successData.expiresAt} onClose={() => setSuccessData(null)} />
+      )}
+      {activeScratchCard && (
+        <ScratchCardModal
+          points={activeScratchCard.points}
+          transactionAmount={activeScratchCard.transactionAmount}
+          onRevealed={async () => {
+            await handlePendingScratchClaim(activeScratchCard)
+            setActiveScratchCard(null)
+          }}
+          onClose={() => setActiveScratchCard(null)}
+        />
       )}
 
       {/* Redeem item confirm */}
@@ -303,14 +365,14 @@ export default function RewardsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="grid w-full grid-cols-2 gap-1 rounded-xl p-1 sm:w-fit sm:flex" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+      <div className="grid w-full grid-cols-3 gap-1 rounded-xl p-1 sm:w-fit sm:flex" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
         role="tablist" aria-label="Rewards sections">
-        {(['catalog', 'history'] as const).map(t => (
+        {(['catalog', 'scratch', 'history'] as const).map(t => (
           <button key={t} role="tab" aria-selected={tab === t}
             onClick={() => setTab(t)}
             className="px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all"
             style={{ background: tab === t ? 'var(--brand)' : 'transparent', color: tab === t ? '#fff' : softSecondary }}>
-            {t === 'catalog' ? 'Catalog' : 'History'}
+            {t === 'catalog' ? 'Catalog' : t === 'scratch' ? `Scratch${pendingScratchCards.length ? ` (${pendingScratchCards.length})` : ''}` : 'History'}
           </button>
         ))}
       </div>
@@ -329,6 +391,36 @@ export default function RewardsPage() {
                 </div>
           }
         </div>
+      )}
+
+      {tab === 'scratch' && (
+        <motion.div className="card p-5" role="tabpanel" aria-label="Scratch cards"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          {pendingScratchCards.length === 0
+            ? <div className="text-center py-12"><div className="inline-flex mb-3"><Icon8 name="rewards" size={40} /></div><p style={{ color: 'var(--text-muted)' }}>No scratch cards waiting</p></div>
+            : <div className="grid gap-4 sm:grid-cols-2">
+                {pendingScratchCards.map(card => (
+                  <div key={card.id} className="rounded-2xl border p-4" style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)' }}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Pending Scratch Card</div>
+                        <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                          Transfer {formatCurrency(card.transactionAmount)} on {formatDate(card.createdAt, 'DD MMM YYYY, hh:mm A')}
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold" style={{ background: 'var(--brand-light)', color: 'var(--brand)' }}>
+                        <Icon8 name="star" size={12} /> {card.points} pts
+                      </span>
+                    </div>
+                    <div className="mt-4 flex gap-3">
+                      <button onClick={() => setActiveScratchCard(card)} className="btn-primary flex-1 py-2.5 text-sm">Open Card</button>
+                      <button onClick={() => removePendingScratchCard(card.userId, card.id)} className="btn-secondary px-4 py-2.5 text-sm">Remove</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+          }
+        </motion.div>
       )}
 
       {/* History */}
@@ -350,7 +442,10 @@ export default function RewardsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{tx.description || tx.type}</div>
-                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{formatDate(tx.createdAt)}</div>
+                      <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        {formatDate(tx.createdAt, 'DD MMM YYYY, hh:mm A')}
+                        {tx.expiryDate ? ` • Expires ${formatDate(tx.expiryDate, 'DD MMM YYYY, hh:mm A')}` : ''}
+                      </div>
                     </div>
                     <div className="font-bold text-sm" style={{ color: (tx.type === 'REDEEM' || tx.type === 'EXPIRE') ? 'var(--danger)' : '#f59e0b' }}>
                       {(tx.type === 'REDEEM' || tx.type === 'EXPIRE') ? '-' : '+'}{tx.points} pts

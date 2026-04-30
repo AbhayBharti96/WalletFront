@@ -154,6 +154,14 @@ export interface Redemption {
   redeemedAt: string
 }
 
+export interface PendingScratchCard {
+  id: string
+  userId: number
+  points: number
+  transactionAmount: number
+  createdAt: string
+}
+
 // ─── KYC ──────────────────────────────────────────────────────────────────────
 export type DocType = 'AADHAAR' | 'PAN' | 'PASSPORT' | 'DRIVING_LICENSE'
 
