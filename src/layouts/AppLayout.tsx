@@ -259,7 +259,7 @@ export default function AppLayout() {
               <AnimatePresence>
                 {notifOpen && (
                   <motion.div
-                    className="absolute right-0 top-11 z-50 w-[min(20rem,calc(100vw-1rem))] overflow-hidden rounded-2xl shadow-2xl"
+                    className="fixed left-3 right-3 top-[4.5rem] z-50 overflow-hidden rounded-2xl shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-11 sm:w-[20rem]"
                     style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
                     initial={{ opacity: 0, y: -8, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -269,7 +269,7 @@ export default function AppLayout() {
                   >
                     <div className="flex flex-col gap-2 px-4 py-3 border-b sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: 'var(--border)' }}>
                       <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>Notifications</span>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         {unreadCount > 0 && (
                           <button onClick={() => dispatch(markAllRead())} className="text-xs font-medium"
                             style={{ color: 'var(--brand)' }} aria-label="Mark all notifications as read">
@@ -284,7 +284,7 @@ export default function AppLayout() {
                         )}
                       </div>
                     </div>
-                    <div className="max-h-72 overflow-y-auto" role="list">
+                    <div className="max-h-[min(60vh,24rem)] overflow-y-auto" role="list">
                       {notifications.length === 0
                         ? (
                           <div className="py-8 text-center">
