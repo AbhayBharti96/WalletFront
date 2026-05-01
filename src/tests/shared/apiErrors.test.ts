@@ -25,16 +25,4 @@ describe('getApiErrorMessage', () => {
     err.response = undefined
     expect(getApiErrorMessage(err)).toContain('Network')
   })
-
-  it('maps blocked wallet errors to a clear user message', () => {
-    const err = new axios.AxiosError('fail')
-    err.response = {
-      status: 403,
-      data: { message: 'Wallet is blocked by admin' },
-      statusText: 'Forbidden',
-      headers: {},
-      config: {} as import('axios').InternalAxiosRequestConfig,
-    }
-    expect(getApiErrorMessage(err)).toBe('Wallet is blocked. Transactions are disabled. Please contact support or the admin team.')
-  })
 })

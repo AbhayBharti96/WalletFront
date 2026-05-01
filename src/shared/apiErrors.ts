@@ -5,17 +5,6 @@ const normalize = (msg: string) => msg.toLowerCase().trim()
 export function toUserFriendlyAuthError(raw: string): string {
   const msg = normalize(raw)
 
-  if (
-    msg.includes('wallet is blocked') ||
-    msg.includes('wallet blocked') ||
-    msg.includes('user is blocked') ||
-    msg.includes('account is blocked') ||
-    msg.includes('account blocked') ||
-    msg.includes('blocked by admin')
-  ) {
-    return 'Wallet is blocked. Transactions are disabled. Please contact support or the admin team.'
-  }
-
   if (msg.includes('invalid credentials') || msg.includes('bad credentials') || msg.includes('invalid username or password')) {
     return 'Incorrect email or password. Please try again.'
   }

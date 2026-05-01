@@ -13,7 +13,6 @@ import { StatusBadge } from '../../shared/components/ui'
 import type { TransferRequest, RazorpayOptions, ReceiverSuggestion } from '../../types'
 import { Icon8 } from '../../shared/components/Icon8'
 import { addPendingScratchCard, removePendingScratchCard } from '../../shared/scratchCards'
-import { getWalletBlockedMessage, isWalletBlocked } from '../../shared/accountStatus'
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000]
 
@@ -58,8 +57,6 @@ export default function WalletPage() {
   const notify       = useNotify()
   const { user, loginAt } = useAppSelector(s => s.auth)
   const { balance, transactions, loading, txLoading } = useAppSelector(s => s.wallet)
-  const walletBlocked = isWalletBlocked(user, balance)
-  const walletBlockedMessage = getWalletBlockedMessage()
   const [showBalance, setShowBalance] = useState(false)
 
   // Modal state
@@ -138,10 +135,6 @@ export default function WalletPage() {
   // ── Razorpay Top-Up ────────────────────────────────────────────────────────
   const handleTopup = async () => {
     if (actionLoading) return
-    if (walletBlocked) {
-      toast.error(walletBlockedMessage)
-      return
-    }
 
     const amount = Number(topupAmount)
     if (isNaN(amount) || amount < 1) {
@@ -274,12 +267,6 @@ export default function WalletPage() {
 
   // ── Transfer ───────────────────────────────────────────────────────────────
   const handleTransferConfirm = async () => {
-    if (walletBlocked) {
-      setConfirmOpen(false)
-      toast.error(walletBlockedMessage)
-      return
-    }
-
     setActionLoading(true)
     const payload: TransferRequest = {
       receiverId:     parseInt(transfer.receiverId),
@@ -318,12 +305,6 @@ export default function WalletPage() {
 
   // ── Withdraw ───────────────────────────────────────────────────────────────
   const handleWithdrawConfirm = async () => {
-    if (walletBlocked) {
-      setConfirmOpen(false)
-      toast.error(walletBlockedMessage)
-      return
-    }
-
     const amount = parseFloat(withdrawAmount)
     setActionLoading(true)
     const res = await dispatch(withdrawFunds(amount))
@@ -361,12 +342,6 @@ export default function WalletPage() {
         <p className="text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>Manage your balance, top up, and transfer funds</p>
       </div>
 
-      {walletBlocked && (
-        <div className="rounded-2xl border px-4 py-3 text-sm font-medium" style={{ borderColor: '#fca5a5', background: '#fef2f2', color: '#b91c1c' }}>
-          {walletBlockedMessage}
-        </div>
-      )}
-
       {/* Balance card */}
       <motion.div className="relative overflow-hidden rounded-3xl p-4 sm:p-6"
         style={{ background: 'linear-gradient(135deg,#052e16 0%,#0d3320 50%,#0a0f1e 100%)' }}
@@ -400,22 +375,15 @@ export default function WalletPage() {
 
           <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" role="group" aria-label="Wallet actions">
             {[
-              { label: 'Top Up', icon: 'topup', key: 'topup', bg: '#22c55e', disabled: walletBlocked },
-              { label: 'Transfer', icon: 'transfer', key: 'transfer', bg: 'rgba(255,255,255,0.12)', disabled: walletBlocked },
-              { label: 'Withdraw', icon: 'withdraw', key: 'withdraw', bg: 'rgba(255,255,255,0.12)', disabled: walletBlocked },
+              { label: 'Top Up', icon: 'topup', key: 'topup', bg: '#22c55e' },
+              { label: 'Transfer', icon: 'transfer', key: 'transfer', bg: 'rgba(255,255,255,0.12)' },
+              { label: 'Withdraw', icon: 'withdraw', key: 'withdraw', bg: 'rgba(255,255,255,0.12)' },
               { label: 'History', icon: 'transactions', key: 'history', bg: 'rgba(255,255,255,0.12)' },
             ].map(btn => (
               <motion.button key={btn.key}
-                onClick={() => {
-                  if (btn.disabled) {
-                    toast.error(walletBlockedMessage)
-                    return
-                  }
-                  btn.key === 'history' ? navigate('/transactions') : setModal(btn.key as any)
-                }}
+                onClick={() => btn.key === 'history' ? navigate('/transactions') : setModal(btn.key as any)}
                 whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                disabled={btn.disabled}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all sm:w-auto"
                 style={{ background: btn.bg, border: '1px solid rgba(255,255,255,0.1)' }}>
                 <Icon8 name={btn.icon as React.ComponentProps<typeof Icon8>['name']} size={16} color="#ffffff" />
                 {btn.label}
@@ -512,7 +480,7 @@ export default function WalletPage() {
               Top-up adds wallet balance only. Reward scratch card is available on successful transfer.
             </span>
           </div>
-          <button onClick={handleTopup} disabled={walletBlocked || actionLoading || !topupAmount} className="w-full btn-primary py-3 text-sm">
+          <button onClick={handleTopup} disabled={actionLoading || !topupAmount} className="w-full btn-primary py-3 text-sm">
             {actionLoading ? 'Processing…' : `Pay ${topupAmount ? formatCurrency(parseFloat(topupAmount)) : '—'} via Razorpay`}
           </button>
         </div>
@@ -624,12 +592,11 @@ export default function WalletPage() {
             </span>
           </div>
           <button onClick={() => {
-            if (walletBlocked) { toast.error(walletBlockedMessage); return }
             const amt = parseFloat(transfer.amount)
             if (!transfer.receiverId) { toast.error('Select a receiver'); return }
             if (!amt || amt < 1 || amt > 25000) { toast.error('Amount must be ₹1–₹25,000'); return }
             setConfirmOpen(true)
-          }} disabled={walletBlocked} className="w-full btn-primary py-3 text-sm">Review Transfer →</button>
+          }} className="w-full btn-primary py-3 text-sm">Review Transfer →</button>
         </div>
       </Modal>
 
@@ -659,12 +626,11 @@ export default function WalletPage() {
             </button>
           </div>
           <button onClick={() => {
-            if (walletBlocked) { toast.error(walletBlockedMessage); return }
             const amt = parseFloat(withdrawAmount)
             if (!amt || amt < 1) { toast.error('Enter a valid amount'); return }
             if (amt > (balance?.balance ?? 0)) { toast.error('Insufficient balance'); return }
             setConfirmOpen(true)
-          }} disabled={walletBlocked} className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
+          }} className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all active:scale-95"
             style={{ background: '#f59e0b' }}>
             Withdraw {withdrawAmount ? formatCurrency(parseFloat(withdrawAmount)) : '—'}
           </button>

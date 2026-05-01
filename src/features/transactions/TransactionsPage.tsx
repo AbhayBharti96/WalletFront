@@ -10,7 +10,6 @@ import { formatCurrency, formatDate, getTransactionDisplayTitle, getTransferCoun
 import { Skeleton, StatusBadge } from '../../shared/components/ui'
 import type { TxType, RewardTransaction, Transaction } from '../../types'
 import { Icon8 } from '../../shared/components/Icon8'
-import { getWalletBlockedMessage, isWalletBlocked } from '../../shared/accountStatus'
 
 const TX_TYPES: TxType[] = ['TOPUP', 'TRANSFER', 'WITHDRAW', 'CASHBACK', 'REDEEM']
 type ExportFormat = 'csv' | 'pdf'
@@ -105,7 +104,6 @@ export function TransactionsPage() {
   const { user } = useAppSelector(s => s.auth)
   const { transactions, ledger, txLoading } = useAppSelector(s => s.wallet)
   const { transactions: rewardTxns } = useAppSelector(s => s.rewards)
-  const walletBlocked = isWalletBlocked(user, null)
   const [tab, setTab]         = useState<'txn' | 'ledger'>('txn')
   const [filter, setFilter]   = useState<TxType | 'ALL'>('ALL')
   const [page, setPage]       = useState(0)
@@ -163,12 +161,6 @@ export function TransactionsPage() {
     <div className="mx-auto max-w-4xl space-y-5 p-3 sm:p-4 lg:p-6">
       <div><h1 className="text-xl font-display font-bold" style={{ color: 'var(--text-primary)' }}>Transactions</h1>
         <p className="text-sm mt-0.5" style={{ color: softSecondary }}>Full history of your wallet activity</p></div>
-
-      {walletBlocked && (
-        <div className="rounded-2xl border px-4 py-3 text-sm font-medium" style={{ borderColor: '#fca5a5', background: '#fef2f2', color: '#b91c1c' }}>
-          {getWalletBlockedMessage()}
-        </div>
-      )}
 
       {/* Download bar */}
       <motion.div className="card flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-end" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>

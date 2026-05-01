@@ -2,8 +2,8 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { useAppSelector, useAppDispatch } from './shared/hooks'
 import { seedNotifications } from './store/notificationSlice'
-import { kycService, userService } from './core/api'
-import { updateKycStatus, updateUserProfile } from './store/authSlice'
+import { kycService } from './core/api'
+import { updateKycStatus } from './store/authSlice'
 import { LoadingScreen, NotFoundPage } from './shared/components/ui'
 import AppLayout from './layouts/AppLayout'
 import AuthLayout from './layouts/AuthLayout'
@@ -59,26 +59,20 @@ export default function App() {
         return
       }
 
+      if (user.role === 'ADMIN') {
+        if (active && user.kycStatus !== 'APPROVED') {
+          dispatch(updateKycStatus('APPROVED'))
+        }
+        if (active) setKycReady(true)
+        return
+      }
+
       if (active) setKycReady(false)
       try {
-        const [{ data: profileResp }, kycResp] = await Promise.all([
-          userService.getProfile(user.id),
-          user.role === 'ADMIN' ? Promise.resolve(null) : kycService.status(user.id),
-        ])
-
-        const nextKyc = user.role === 'ADMIN'
-          ? 'APPROVED'
-          : kycResp?.data?.data?.status ?? user.kycStatus
-
-        if (active) {
-          dispatch(updateUserProfile({
-            ...profileResp.data,
-            kycStatus: nextKyc,
-          }))
-        }
-
-        if (active && nextKyc && nextKyc !== user.kycStatus) {
-          dispatch(updateKycStatus(nextKyc))
+        const { data } = await kycService.status(user.id)
+        const next = data?.data?.status
+        if (active && next && next !== user.kycStatus) {
+          dispatch(updateKycStatus(next))
         }
       } catch {
         // Keep current user status if status API fails; do not block navigation forever.
