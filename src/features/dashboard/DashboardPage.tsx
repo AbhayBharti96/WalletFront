@@ -1,6 +1,7 @@
 import { useEffect, Suspense, lazy, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import toast from 'react-hot-toast'
 import { useAppDispatch, useAppSelector, useTheme } from '../../shared/hooks'
 import { fetchBalance, fetchTransactions } from '../../store/walletSlice'
 import { fetchRewardSummary } from '../../store/rewardsSlice'
@@ -9,6 +10,7 @@ import { Skeleton } from '../../shared/components/ui'
 import { Icon8 } from '../../shared/components/Icon8'
 import { buildWeeklyCashflow } from './weeklyCashflow'
 import WalletActionModals, { type WalletActionModalType } from '../wallet/WalletActionModals'
+import { getWalletBlockedMessage, isWalletBlocked } from '../../shared/accountStatus'
 
 const SpendingOverviewChart = lazy(() => import('./SpendingOverviewChart'))
 
@@ -60,6 +62,8 @@ export default function DashboardPage() {
   const { user } = useAppSelector(s => s.auth)
   const { balance, loading: wLoad, transactions } = useAppSelector(s => s.wallet)
   const { summary, loading: rLoad } = useAppSelector(s => s.rewards)
+  const walletBlocked = isWalletBlocked(user, balance)
+  const walletBlockedMessage = getWalletBlockedMessage()
   const [showBalance, setShowBalance] = useState(false)
   const [quickActionModal, setQuickActionModal] = useState<WalletActionModalType>(null)
 
@@ -153,10 +157,10 @@ export default function DashboardPage() {
               <div className="mt-2 break-words text-3xl font-black leading-none sm:text-4xl" style={{ color: '#0e1f3f' }}>{wLoad ? '...' : balanceText}</div>
               <div
                 className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
-                style={{ background: '#ddf3e5', color: '#2aa260' }}
+                style={walletBlocked ? { background: '#fee2e2', color: '#b91c1c' } : { background: '#ddf3e5', color: '#2aa260' }}
               >
                 <span aria-hidden="true">&#8599;</span>
-                Active wallet state
+                {walletBlocked ? 'Wallet blocked by admin' : 'Active wallet state'}
               </div>
             </div>
             <div className="rounded-3xl p-4" style={{ background: '#f4f6f8', border: '1px solid #d5dee6', boxShadow: isDark ? 'none' : lightCardShadow }}>
@@ -191,6 +195,18 @@ export default function DashboardPage() {
           >
             {user?.kycStatus === 'REJECTED' ? 'Resubmit' : 'Start KYC'}
           </button>
+        </motion.div>
+      )}
+
+      {walletBlocked && (
+        <motion.div
+          className="flex flex-col gap-3 rounded-2xl px-4 py-3 sm:flex-row sm:items-center"
+          style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c' }}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <span className="text-xl" aria-hidden="true"><Icon8 name="blocked" size={18} /></span>
+          <p className="flex-1 text-sm font-medium">{walletBlockedMessage}</p>
         </motion.div>
       )}
 
@@ -314,8 +330,15 @@ export default function DashboardPage() {
           ] as const).map((a, i) => (
             <motion.button
               key={a.label}
-              onClick={() => 'modal' in a ? setQuickActionModal(a.modal) : navigate(a.to)}
-              className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-2xl p-3 text-center transition-all sm:min-h-[100px] sm:p-4"
+              onClick={() => {
+                if ('modal' in a && walletBlocked) {
+                  toast.error(walletBlockedMessage)
+                  return
+                }
+                'modal' in a ? setQuickActionModal(a.modal) : navigate(a.to)
+              }}
+              className="flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-2xl p-3 text-center transition-all disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-[100px] sm:p-4"
+              disabled={'modal' in a && walletBlocked}
               style={{ background: `${a.color}10`, border: `1px solid ${a.color}25`, color: a.color }}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}

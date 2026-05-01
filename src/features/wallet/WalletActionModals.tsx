@@ -10,6 +10,7 @@ import { Icon8 } from '../../shared/components/Icon8'
 import { calcPoints, formatCurrency, generateKey } from '../../shared/utils'
 import type { ReceiverSuggestion, RazorpayOptions, TransferRequest } from '../../types'
 import { addPendingScratchCard, removePendingScratchCard } from '../../shared/scratchCards'
+import { getWalletBlockedMessage, isWalletBlocked } from '../../shared/accountStatus'
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000]
 const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js'
@@ -58,6 +59,8 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
   const notify = useNotify()
   const { user } = useAppSelector(s => s.auth)
   const { balance } = useAppSelector(s => s.wallet)
+  const walletBlocked = isWalletBlocked(user, balance)
+  const walletBlockedMessage = getWalletBlockedMessage()
 
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
@@ -144,6 +147,10 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
 
   const handleTopup = async () => {
     if (actionLoading) return
+    if (walletBlocked) {
+      toast.error(walletBlockedMessage)
+      return
+    }
 
     const amount = Number(topupAmount)
     if (Number.isNaN(amount) || amount < 1) {
@@ -259,6 +266,12 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
   }
 
   const handleTransferConfirm = async () => {
+    if (walletBlocked) {
+      setConfirmOpen(false)
+      toast.error(walletBlockedMessage)
+      return
+    }
+
     setActionLoading(true)
     const payload: TransferRequest = {
       receiverId: parseInt(transfer.receiverId, 10),
@@ -297,6 +310,12 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
   }
 
   const handleWithdrawConfirm = async () => {
+    if (walletBlocked) {
+      setConfirmOpen(false)
+      toast.error(walletBlockedMessage)
+      return
+    }
+
     const amount = parseFloat(withdrawAmount)
     setActionLoading(true)
     const res = await dispatch(withdrawFunds(amount))
@@ -331,6 +350,11 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
 
       <Modal open={modal === 'topup'} onClose={onClose} title="Top Up Wallet">
         <div className="space-y-4">
+          {walletBlocked && (
+            <div className="rounded-xl border px-3 py-3 text-sm font-medium" style={{ borderColor: '#fca5a5', background: '#fef2f2', color: '#b91c1c' }}>
+              {walletBlockedMessage}
+            </div>
+          )}
           <div>
             <label htmlFor="dashboard-topup-amount" className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Amount (Rs)</label>
             <input id="dashboard-topup-amount" type="number" placeholder="Enter amount" min={1}
@@ -352,7 +376,7 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
               ))}
             </div>
           </div>
-          <button onClick={handleTopup} disabled={actionLoading || !topupAmount} className="w-full btn-primary py-3 text-sm">
+          <button onClick={handleTopup} disabled={walletBlocked || actionLoading || !topupAmount} className="w-full btn-primary py-3 text-sm">
             {actionLoading ? 'Processing...' : `Pay ${topupAmount ? formatCurrency(parseFloat(topupAmount)) : '—'} via Razorpay`}
           </button>
         </div>
@@ -360,6 +384,11 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
 
       <Modal open={modal === 'transfer'} onClose={onClose} title="Transfer Money">
         <div className="space-y-4">
+          {walletBlocked && (
+            <div className="rounded-xl border px-3 py-3 text-sm font-medium" style={{ borderColor: '#fca5a5', background: '#fef2f2', color: '#b91c1c' }}>
+              {walletBlockedMessage}
+            </div>
+          )}
           <div>
             <label htmlFor="dashboard-receiver-search" className="block text-xs font-semibold mb-1.5 uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Receiver</label>
             <div className="relative">
@@ -459,16 +488,22 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
           ))}
 
           <button onClick={() => {
+            if (walletBlocked) { toast.error(walletBlockedMessage); return }
             const amt = parseFloat(transfer.amount)
             if (!transfer.receiverId) { toast.error('Select a receiver'); return }
             if (!amt || amt < 1 || amt > 25000) { toast.error('Amount must be Rs1-Rs25,000'); return }
             setConfirmOpen(true)
-          }} className="w-full btn-primary py-3 text-sm">Review Transfer</button>
+          }} disabled={walletBlocked} className="w-full btn-primary py-3 text-sm">Review Transfer</button>
         </div>
       </Modal>
 
       <Modal open={modal === 'withdraw'} onClose={onClose} title="Withdraw Funds">
         <div className="space-y-4">
+          {walletBlocked && (
+            <div className="rounded-xl border px-3 py-3 text-sm font-medium" style={{ borderColor: '#fca5a5', background: '#fef2f2', color: '#b91c1c' }}>
+              {walletBlockedMessage}
+            </div>
+          )}
           <div className="p-3 rounded-xl text-sm" style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
             Available: <strong style={{ color: 'var(--brand)' }}>{formatCurrency(balance?.balance ?? 0)}</strong>
           </div>
@@ -492,11 +527,12 @@ export default function WalletActionModals({ modal, onClose }: WalletActionModal
             </button>
           </div>
           <button onClick={() => {
+            if (walletBlocked) { toast.error(walletBlockedMessage); return }
             const amt = parseFloat(withdrawAmount)
             if (!amt || amt < 1) { toast.error('Enter a valid amount'); return }
             if (amt > (balance?.balance ?? 0)) { toast.error('Insufficient balance'); return }
             setConfirmOpen(true)
-          }} className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all active:scale-95"
+          }} disabled={walletBlocked} className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
             style={{ background: '#f59e0b' }}>
             Withdraw {withdrawAmount ? formatCurrency(parseFloat(withdrawAmount)) : '—'}
           </button>
